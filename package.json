@@ -1,0 +1,19 @@
+{
+  "name": "voxel-sandbox-engine",
+  "version": "1.0.0",
+  "description": "<!-- Allow this file to not have a first line heading --> <!-- markdownlint-disable-file MD041 no-emphasis-as-heading --> <!-- markdownlint-disable-file MD033 -->",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
+  },
+  "keywords": [],
+  "author": "Schetkiglobe7",
+  "private": true,
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
+    "husky": "^9.1.7"
+  }
+}

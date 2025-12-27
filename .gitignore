@@ -28,6 +28,7 @@ target/
 .idea/
 *.iml
 *.iws
+*.ipr
 
 # VS Code
 .vscode/
@@ -43,6 +44,9 @@ target/
 
 # macOS
 .DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
 
 # Windows
 Thumbs.db
@@ -50,6 +54,7 @@ desktop.ini
 
 # Linux
 *~
+.nfs*
 
 # =========================
 # Logs
@@ -68,9 +73,39 @@ desktop.ini
 # =========================
 tmp/
 temp/
+.cache/
 
 # =========================
-# Environment
+# Node.js (tooling only: Husky / Commitlint)
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Husky internals
+# =========================
+# Husky hooks are versioned, internal runtime files are not
+.husky/_/_
+
+# =========================
+# Environment / secrets
 # =========================
 .env
 .env.*
+!.env.example
+
+# =========================
+# Database / local data
+# =========================
+*.db
+*.sqlite
+*.sqlite3
+
+# =========================
+# Misc
+# =========================
+*.swp
+*.bak

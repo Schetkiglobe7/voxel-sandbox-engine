@@ -1,0 +1,7 @@
+# This file defines the default code owners for the repository.
+# Documentation:
+# https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners
+
+# Default owners for the entire repository.
+# All changes will request review from the maintainer(s) listed below.
+* @Schetkiglobe7
