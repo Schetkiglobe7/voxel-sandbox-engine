@@ -1,5 +1,7 @@
 package com.voxelsandbox.engine.world.chunk;
 
+import java.util.Objects;
+
 
 /**
  * Represents the logical position of a chunk in the world.
@@ -39,23 +41,20 @@ public final class ChunkPosition {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (!(object instanceof ChunkPosition)) return false;
-        ChunkPosition that = (ChunkPosition) object;
-        return this.x == that.x && this.y == that.y && this.z == that.z;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ChunkPosition)) return false;
+        ChunkPosition that = (ChunkPosition) o;
+        return x == that.x && y == that.y && z == that.z;
     }
 
     @Override
     public int hashCode() {
-        int result = Integer.hashCode(x);
-        result = 31 * result + Integer.hashCode(y);
-        result = 31 * result + Integer.hashCode(z);
-        return result;
+        return Objects.hash(x, y, z);
     }
 
     @java.lang.Override
-    public String toString() {
+    public java.lang.String toString() {
         return "ChunkPosition{" +
                 "x=" + x +
                 ", y=" + y +
