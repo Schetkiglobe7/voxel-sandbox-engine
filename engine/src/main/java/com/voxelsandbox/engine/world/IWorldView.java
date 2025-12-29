@@ -2,6 +2,7 @@ package com.voxelsandbox.engine.world;
 
 import com.voxelsandbox.engine.world.chunk.Chunk;
 import com.voxelsandbox.engine.world.chunk.ChunkPosition;
+import com.voxelsandbox.engine.world.type.VoxelType;
 
 import java.util.Map;
 
@@ -30,4 +31,14 @@ public interface IWorldView {
      * @return map of chunk position to chunks.
      */
     Map<ChunkPosition, Chunk> getChunks();
+
+    /**
+     * Returns the voxel type at the given world coordinates.
+     *
+     * @param worldX world x coordinate (voxel space)
+     * @param worldY world y coordinate (voxel space)
+     * @param worldZ world z coordinate (voxel space)
+     * @return the voxel type, or {@link VoxelType#AIR} if not present.
+     */
+    VoxelType getVoxel(int worldX, int worldY, int worldZ);
 }
