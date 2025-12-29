@@ -21,14 +21,14 @@ import java.util.Objects;
 public final class World {
     private final long seed;
     private final IWorldGenerator generator;
-    private final Map<ChunkPosition, Chunk> chunks = new HashMap<>();
+    private final WorldState state = new WorldState();
 
     /**
      * Empty world
      */
     public World(long seed, IWorldGenerator generator) {
         this.seed = seed;
-        this.generator = Objects.requireNonNull(generator, " IWorldGenerator must not be null");
+        this.generator = Objects.requireNonNull(generator, "IWorldGenerator must not be null");
     }
 
     /**
@@ -37,7 +37,7 @@ public final class World {
      * @return map of chunk positions to chunks.
      */
     public Map<ChunkPosition, Chunk> getChunks() {
-        return Collections.unmodifiableMap(chunks);
+        return this.state.getChunks();
     }
 
     /**
@@ -48,7 +48,7 @@ public final class World {
      * @return the chunk, or {@code null} if not present
      */
     public Chunk getChunk(ChunkPosition position) {
-        return chunks.get(position);
+        return state.getChunk(position);
     }
 
     /**
@@ -57,7 +57,7 @@ public final class World {
      */
     public Chunk loadChunk(ChunkPosition position) {
         Objects.requireNonNull(position, "ChunkPosition must be not null");
-        return chunks.computeIfAbsent(position, pos -> generator.generateChunk(seed, pos));
+        return this.state.getOrCreateChunk(position, this.seed, this.generator);
     }
 
     /**
@@ -65,7 +65,7 @@ public final class World {
      *
      * <p>
      *     The seed is a deterministic value that influences world generation.
-     *     Gien the same seed and the same world generator strategy,
+     *     Given the same seed and the same world generator strategy,
      *     the generated world content will be reproducible.
      * </p>
      *

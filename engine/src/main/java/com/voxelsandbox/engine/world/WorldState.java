@@ -1,0 +1,69 @@
+package com.voxelsandbox.engine.world;
+
+import com.voxelsandbox.engine.world.chunk.Chunk;
+import com.voxelsandbox.engine.world.chunk.ChunkPosition;
+import com.voxelsandbox.engine.world.generation.IWorldGenerator;
+
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Map;
+import java.util.HashMap;
+
+
+/**
+ * Internal mutable state of a World.
+ *
+ * <p>
+ *     This class is responsible for storing and managing loaded chunks.
+ *     It is not intended to be accessed directly outside of the world package
+ * </p>
+ */
+final class WorldState {
+    private final Map<ChunkPosition, Chunk> chunks = new HashMap<>();
+
+    /**
+     * Returns ad unmodifiable view of the loaded chunks.
+     *
+     * @return map of chunk positions to chunks
+     */
+    Map<ChunkPosition, Chunk> getChunks() {
+        return Collections.unmodifiableMap(chunks);
+    }
+
+    /**
+     * Returns the chunk at the given position, or {@code null} if not present.
+     *
+     * @param position the chunk position.
+     * @return the chunk or {@code null}
+     */
+    Chunk getChunk(ChunkPosition position) {
+        return chunks.get(position);
+    }
+
+    /**
+     * Adds a chunks to the state.
+     *
+     * @param chunk the chunk to add
+     */
+    void putChunk(Chunk chunk) {
+        Objects.requireNonNull(chunk, "Chunk must be not null");
+        chunks.put(chunk.getPosition(), chunk);
+    }
+
+    /**
+     * Returns the chunk at the given position, generating and storing it
+     * if it does not already exist.
+     *
+     * @param position the chunk position
+     * @param generator the chunk generator
+     * @param seed the world seed
+     * @return the existing of generated chunk
+     */
+    Chunk getOrCreateChunk(
+            ChunkPosition position,
+            long seed,
+            IWorldGenerator generator
+    ) {
+        return chunks.computeIfAbsent(position, pos -> generator.generateChunk(seed, pos));
+    }
+}
