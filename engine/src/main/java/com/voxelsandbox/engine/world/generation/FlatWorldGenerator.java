@@ -51,12 +51,6 @@ public final class FlatWorldGenerator implements IWorldGenerator {
      * @param chunk the chunk to fill.
      */
     private void fillChunkSolid(Chunk chunk) {
-        for (int x = 0; x < Chunk.WIDTH; x++) {
-            for (int y = 0; y < Chunk.HEIGHT; y++) {
-                for (int z = 0; z < Chunk.DEPTH; z++) {
-                    chunk.setVoxel(x, y, z, VoxelType.SOLID);
-                }
-            }
-        }
+        chunk.forEachVoxel((position, type) -> chunk.setVoxel(position, VoxelType.SOLID));
     }
 }

@@ -1,6 +1,7 @@
 package com.voxelsandbox.engine.world.chunk;
 
 import com.voxelsandbox.engine.world.chunk.ChunkPosition;
+import com.voxelsandbox.engine.world.chunk.config.ChunkDimensions;
 import com.voxelsandbox.engine.world.type.VoxelType;
 import com.voxelsandbox.engine.world.chunk.config.IVoxelConsumer;
 
@@ -16,16 +17,12 @@ import java.util.Arrays;
  * </p>
  */
 public final class Chunk {
-    public static final int WIDTH = 16;
-    public static final int HEIGHT = 16;
-    public static final int DEPTH = 16;
-
     private final ChunkPosition position;
     private final VoxelType[] voxels;
 
     public Chunk(ChunkPosition position) {
         this.position = Objects.requireNonNull(position, "ChunkPosition must not be null");
-        this.voxels = new VoxelType[WIDTH * HEIGHT * DEPTH];
+        this.voxels = new VoxelType[ChunkDimensions.SIZE_X * ChunkDimensions.SIZE_Y * ChunkDimensions.SIZE_Z];
         Arrays.fill(this.voxels, VoxelType.AIR);
     }
 
@@ -34,32 +31,29 @@ public final class Chunk {
     }
 
     /**
-     * Returns the voxel type at the given local chunk coordinates.
+     * Returns the voxel type at the given local position.
      *
-     * @param x local x coordinate
-     * @param y local y coordinate
-     * @param z local z coordinate
+     * @param pos local voxel position inside the chunk
      * @return the voxel at the specified position
      * @throws IndexOutOfBoundsException if the coordinates are outside chunk bounds
      */
-    public VoxelType getVoxel(int x, int y, int z) {
-        validateCoordinates(x, y, z);
-        return voxels[index(x, y, z)];
+    public VoxelType getVoxel(LocalVoxelPosition pos) {
+        Objects.requireNonNull(pos, "LocalVoxelPosition must not be null");
+        return voxels[index(pos)];
     }
 
     /**
-     * Sets the voxel type at the given local chunk coordinates.
+     * Sets the voxel type at the given local position.
      *
-     * @param x local x coordinate
-     * @param y local y coordinate
-     * @param z local z coordinate
+     * @param pos local position inside the chunk
      * @param type the voxel type to set
      * @throws IndexOutOfBoundsException if the coordinates are outside chunk bounds
      * @throws NullPointerException if the voxel type is null
      */
-    public void setVoxel(int x, int y, int z, VoxelType type) {
-        validateCoordinates(x, y, z);
-        voxels[index(x, y, z)] = Objects.requireNonNull(type, "VoxelType must not be null");
+    public void setVoxel(LocalVoxelPosition pos, VoxelType type) {
+        Objects.requireNonNull(pos, "LocalVoxelPosition must not be null");
+        Objects.requireNonNull(type, "VoxelType must not be null");
+        voxels[index(pos)] = type;
     }
 
     /**
@@ -69,22 +63,23 @@ public final class Chunk {
      * @param consumer the consumer invoked for each voxel
      */
     public void forEachVoxel(IVoxelConsumer consumer) {
-        Objects.requireNonNull(consumer, "VoxelConsumer must not be null");
+        Objects.requireNonNull(consumer, "IVoxelConsumer must not be null");
 
-        for(int y = 0; y < HEIGHT; y++) {
-            for (int z = 0; z < DEPTH; z++) {
-                for (int x = 0; x < WIDTH; x++) {
-                    consumer.accept(x, y, z, getVoxel(x, y, z));
+        for(int y = 0; y < ChunkDimensions.SIZE_Y; y++) {
+            for (int z = 0; z < ChunkDimensions.SIZE_Z; z++) {
+                for (int x = 0; x < ChunkDimensions.SIZE_X; x++) {
+                    LocalVoxelPosition pos = new LocalVoxelPosition(x, y, z);
+                    consumer.accept(pos, getVoxel(pos));
                 }
             }
         }
     }
 
     /**
-     * Computes the linear array index for the given local voxel coordinates.
+     * Computes the linear array index for the given local voxel position.
      *
      * <p>
-     *     The mapping flattens 3D chunk-local coordinates (x, y, z) into a 1D array
+     *     The mapping flattens 3D chunk-local coordinates into a 1D array
      *     using the following layout:
      *     <ul>
      *         <li> x is the fastest-changing axis </li>
@@ -97,41 +92,38 @@ public final class Chunk {
      *     check bounds. Coordinate validation is handled separately.
      * </p>
      *
-     * @param x local x coordinate (0 ≤ x &alt; WIDTH)
-     * @param y local y coordinate (0 ≤ y &alt; WEIGHT)
-     * @param z local z coordinate (0 ≤ z &alt; DEPTH)
+     * @param position the local voxel position inside the chunk
      * @return the corresponding linear index in the voxel array
      */
-    private int index(int x, int y, int z) {
-        return x
-                + z * WIDTH
-                + y * WIDTH * DEPTH;
+    private int index(LocalVoxelPosition position) {
+        return position.x()
+                + position.z() * ChunkDimensions.SIZE_X
+                + position.y() * ChunkDimensions.SIZE_X * ChunkDimensions.SIZE_Z;
     }
 
     /**
-     * Validates that the given local voxel coordinates are within the bounds
+     * Validates that the given local voxel position is within the bounds
      * of this chunk.
      *
      * <p>
-     *     This method enforces the chunk invariants by ensuring that all accesses
-     *     to the internal voxel storage are performed using valid local coordinates.
-     *     Any violation is considered a programming error and results in an immediate
-     *     exception.
+     *     This method enforces chunk invariants by ensuring that all accesses
+     *     to the internal voxel storage use valid local coordinates.
+     *     Any violation is considered a programming error and results in
+     *     an immediate exception.
      * </p>
      *
-     * @param x local x coordinate (0 ≤ x &alt; WIDTH)
-     * @param y local y coordinate (0 ≤ y &alt; HEIGHT)
-     * @param z local < coordinate (0 ≤ z &alt; DEPTH)
+     * @param position the local voxel position to validate
+     * @throws IndexOutOfBoundsException if any coordinate is outside chunk bounds
      */
-    private void validateCoordinates(int x, int y, int z) {
-        if (x < 0 || x >= WIDTH) {
-            throw new IndexOutOfBoundsException("x out of bounds: " + x);
+    private void validateCoordinates(LocalVoxelPosition position) {
+        if (position.x() < 0 || position.x() >= ChunkDimensions.SIZE_X) {
+            throw new IndexOutOfBoundsException("x out of bounds: " + position.x());
         }
-        if (y < 0 || y >= HEIGHT) {
-            throw new IndexOutOfBoundsException("y out of bounds: " + y);
+        if (position.y() < 0 || position.y() >= ChunkDimensions.SIZE_Y) {
+            throw new IndexOutOfBoundsException("y out of bounds: " + position.y());
         }
-        if (z < 0 || z >= DEPTH) {
-            throw new IndexOutOfBoundsException("z out of bounds: " + z);
+        if (position.z() < 0 || position.z() >= ChunkDimensions.SIZE_Z) {
+            throw new IndexOutOfBoundsException("z out of bounds: " + position.z());
         }
     }
 }
