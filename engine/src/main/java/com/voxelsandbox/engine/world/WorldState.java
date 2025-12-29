@@ -54,29 +54,6 @@ final class WorldState {
         chunks.put(chunk.getPosition(), chunk);
     }
 
-// TODO: Da eliminare se non serve
-//    /**
-//     * Ensures that a chunk exists at the given position.
-//     *
-//     * <p>
-//     *     If a chunk is already present in the world state at the given position,
-//     *     that instance is returned. Otherwise, a new chunk is generated using
-//     *     the provided world generator and seed, registered internally, and returned.
-//     * </p>
-//     *
-//     * @param position the chunk position
-//     * @param generator the chunk generator strategy
-//     * @param seed the world seed used for deterministic generation
-//     * @return the existing chunk if already present, or the newly generated chunk.
-//     */
-//    Chunk ensureChunkPresent(
-//            ChunkPosition position,
-//            long seed,
-//            IWorldGenerator generator
-//    ) {
-//        return chunks.computeIfAbsent(position, pos -> generator.generateChunk(seed, pos));
-//    }
-
     /**
      * Return whether a chunk is already present in the world state.
      *
