@@ -9,6 +9,8 @@ import com.voxelsandbox.engine.world.type.VoxelType;
  * A voxel is an immutable value object identified by its grid coordinates
  * and its logical type.
  * </p>
+ *
+ * <strong>N.B:</strong> Intentionally not a record: Voxel may evolve with behavior and state
  */
 public final class Voxel {
 
@@ -48,11 +50,16 @@ public final class Voxel {
     }
 
     /**
-     * Creates a new voxel instance with the same coordinates
+     * Creates a new voxel {@link Voxel} instance with the same spatial coordinates
      * but different type.
      *
-     * @param newType
-     * @return
+     * <p>
+     *     This method preserves immutability by returning a new voxel instance
+     *     instead of modifying the current one.
+     * </p>
+     *
+     * @param newType the new {@link VoxelType} to associate with this voxel
+     * @return a new voxel instance with the same coordinates and the given type
      */
     public Voxel withType(VoxelType newType) {
         return new Voxel(this.x, this.y, this.z, newType);

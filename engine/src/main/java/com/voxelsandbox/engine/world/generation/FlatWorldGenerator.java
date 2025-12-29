@@ -40,7 +40,7 @@ public final class FlatWorldGenerator implements IWorldGenerator {
     @Override
     public Chunk generateChunk(long seed, ChunkPosition position) {
         Chunk chunk = new Chunk(position);
-        int chunkBaseY = position.getY();
+        int chunkBaseY = position.y();
         if(chunkBaseY <= BASE_HEIGHT) fillChunkSolid(chunk);
         return chunk;
     }
@@ -51,9 +51,9 @@ public final class FlatWorldGenerator implements IWorldGenerator {
      * @param chunk the chunk to fill.
      */
     private void fillChunkSolid(Chunk chunk) {
-        for (int x = 0; x < chunk.WIDTH; x++) {
-            for (int y = 0; y < chunk.HEIGHT; y++) {
-                for (int z = 0; z < chunk.DEPTH; z++) {
+        for (int x = 0; x < Chunk.WIDTH; x++) {
+            for (int y = 0; y < Chunk.HEIGHT; y++) {
+                for (int z = 0; z < Chunk.DEPTH; z++) {
                     chunk.setVoxel(x, y, z, VoxelType.SOLID);
                 }
             }

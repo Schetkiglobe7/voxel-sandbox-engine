@@ -16,7 +16,7 @@ public final class ChunkDimensions {
     public static final int SIZE_X = 16;
 
     /**
-     * Number of voxels along the Y acis.
+     * Number of voxels along the Y axis.
      */
     public static final int SIZE_Y = 16;
 

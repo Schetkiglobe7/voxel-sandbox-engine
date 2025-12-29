@@ -40,7 +40,7 @@ public final class Chunk {
      * @param y local y coordinate
      * @param z local z coordinate
      * @return the voxel at the specified position
-     * @throws indexOutOfBoundsException if the coordinates are outside chunk bounds
+     * @throws IndexOutOfBoundsException if the coordinates are outside chunk bounds
      */
     public VoxelType getVoxel(int x, int y, int z) {
         validateCoordinates(x, y, z);
@@ -54,7 +54,7 @@ public final class Chunk {
      * @param y local y coordinate
      * @param z local z coordinate
      * @param type the voxel type to set
-     * @throws indexOutOfBoundsException if the coordinates are outside chunk bounds
+     * @throws IndexOutOfBoundsException if the coordinates are outside chunk bounds
      * @throws NullPointerException if the voxel type is null
      */
     public void setVoxel(int x, int y, int z, VoxelType type) {

@@ -13,5 +13,9 @@ repositories {
 }
 
 dependencies {
-    // empty on purpose
+    testImplementation(libs.junit.jupiter)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }

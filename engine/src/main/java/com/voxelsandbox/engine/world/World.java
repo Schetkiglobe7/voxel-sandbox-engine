@@ -4,8 +4,6 @@ import com.voxelsandbox.engine.world.chunk.Chunk;
 import com.voxelsandbox.engine.world.chunk.ChunkPosition;
 import com.voxelsandbox.engine.world.generation.IWorldGenerator;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -18,7 +16,7 @@ import java.util.Objects;
  *     delegating chunk generation while managing chunk lifecycle.
  * </p>
  */
-public final class World {
+public final class World implements IWorldView {
     private final long seed;
     private final IWorldGenerator generator;
     private final WorldState state = new WorldState();
@@ -55,9 +53,9 @@ public final class World {
      * Loads a chunk at the given position.
      * If the chunk is not present, it is generated and registered.
      */
-    public Chunk loadChunk(ChunkPosition position) {
+    public void loadChunk(ChunkPosition position) {
         Objects.requireNonNull(position, "ChunkPosition must be not null");
-        return this.state.getOrCreateChunk(position, this.seed, this.generator);
+        this.state.ensureChunkPresent(position, this.seed, this.generator);
     }
 
     /**

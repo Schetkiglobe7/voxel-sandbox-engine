@@ -1,11 +1,11 @@
 package com.voxelsandbox.engine.world.type;
 
 /**
- * Defines the type of a voxel.
+ * Defines the type of voxel.
  *
  * <p>
  * This enum represents the logical identity of a voxel,
- * independent from its position or rendering details.
+ * independent of its position or rendering details.
  * </p>
  *
  * <p>

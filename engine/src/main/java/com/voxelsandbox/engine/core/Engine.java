@@ -3,9 +3,10 @@ package com.voxelsandbox.engine.core;
 
 /**
  * Central domain object of the engine.
- *
- * At this stage, this class is intentionally minimal.
- * Responsibilities and lifecycle will be introduced incrementally.
+ * <p>
+ *     At this stage, this class is intentionally minimal.
+ *     Responsibilities and lifecycle will be introduced incrementally.
+ * </p>
  */
 public final class Engine {
 

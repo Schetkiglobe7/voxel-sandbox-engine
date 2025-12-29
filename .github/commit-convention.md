@@ -46,7 +46,7 @@ Changes relevant to the API or UI:
 - `fix` Commits that fix an API or UI bug of a preceded `feat` commit
 - `refactor` Commits that rewrite or restructure code without altering API or UI behavior
 - `perf` Commits are special type of `refactor` commits that specifically improve performance
-- `style` Commits that address code style (e.g., white-space, formatting, missing semi-colons) and do not affect application behavior
+- `style` Commits that address code style (e.g., white-space, formatting, missing semicolons) and do not affect application behavior
 - `test` Commits that add missing tests or correct existing ones
 - `docs` Commits that exclusively affect documentation
 - `build` Commits that affect build-related components such as build tools, dependencies, project version, ...
@@ -78,7 +78,7 @@ The `body` should include the motivation for the change and contrast this with p
 - Use the imperative, present tense: "change" not "changed" nor "changes"
 
 ### Footer
-The `footer` should contain issue references and informations about **Breaking Changes**
+The `footer` should contain issue references and information about **Breaking Changes**
 - The footer is an **optional** part, except if the commit introduce breaking changes
 - *Optionally* reference issue identifiers (e.g., `Closes #123`, `Fixes JIRA-456`)
 - **Breaking Changes** **must** start with the word `BREAKING CHANGE:`

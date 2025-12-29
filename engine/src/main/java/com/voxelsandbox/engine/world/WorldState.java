@@ -15,7 +15,7 @@ import java.util.HashMap;
  *
  * <p>
  *     This class is responsible for storing and managing loaded chunks.
- *     It is not intended to be accessed directly outside of the world package
+ *     It is not intended to be accessed directly outside the world package
  * </p>
  */
 final class WorldState {
@@ -57,13 +57,12 @@ final class WorldState {
      * @param position the chunk position
      * @param generator the chunk generator
      * @param seed the world seed
-     * @return the existing of generated chunk
      */
-    Chunk getOrCreateChunk(
+    void ensureChunkPresent(
             ChunkPosition position,
             long seed,
             IWorldGenerator generator
     ) {
-        return chunks.computeIfAbsent(position, pos -> generator.generateChunk(seed, pos));
+        chunks.computeIfAbsent(position, pos -> generator.generateChunk(seed, pos));
     }
 }
