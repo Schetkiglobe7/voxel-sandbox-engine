@@ -156,10 +156,9 @@ public final class World implements IWorldView {
     public void setVoxel(int worldX, int worldY, int worldZ, VoxelType type) {
         Objects.requireNonNull(type, "VoxelType must be not null");
 
-        if (worldY < MIN_Y || worldY > MAX_Y) {
+        if (worldY < World.MIN_Y || worldY >= World.MAX_Y) {
             throw new IndexOutOfBoundsException(
-                    "worldY out of bounds: " + worldY +
-                            " (valid range: " + MIN_Y + " .. " + (MAX_Y - 1) + ")"
+                    "Y coordinate out of world bounds: " + worldY
             );
         }
 
