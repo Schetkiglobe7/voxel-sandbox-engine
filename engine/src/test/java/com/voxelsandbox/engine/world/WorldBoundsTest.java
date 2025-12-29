@@ -40,11 +40,11 @@ public class WorldBoundsTest {
         ChunkPosition pos =
                 ChunkCoordinateMapper.toChunkPosition(0, World.MIN_Y - 1, 0);
 
-        assertNull(world.getChunk(pos));
+        assertNull(world.getChunkIfPresent(pos));
 
         view.getVoxel(0, World.MIN_Y - 1, 0);
 
-        assertNull(world.getChunk(pos));
+        assertNull(world.getChunkIfPresent(pos));
     }
 
     @Test
@@ -76,10 +76,10 @@ public class WorldBoundsTest {
         ChunkPosition pos =
                 ChunkCoordinateMapper.toChunkPosition(0, y, 0);
 
-        assertNull(world.getChunk(pos));
+        assertNull(world.getChunkIfPresent(pos));
 
         world.setVoxel(0, y, 0, VoxelType.SOLID);
 
-        assertNotNull(world.getChunk(pos));
+        assertNotNull(world.getChunkIfPresent(pos));
     }
 }

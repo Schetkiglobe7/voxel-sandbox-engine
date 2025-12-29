@@ -20,12 +20,12 @@ class WorldViewTest {
         ChunkPosition position = new ChunkPosition(0, 0, 0);
 
         // read-only access
-        assertNull(view.getChunk(position));
+        assertNull(view.getChunkIfPresent(position));
 
         // mutation happens on World
         world.loadChunk(position);
 
         // read-only view reflects mutation
-        assertNotNull(view.getChunk(position));
+        assertNotNull(view.getChunkIfPresent(position));
     }
 }

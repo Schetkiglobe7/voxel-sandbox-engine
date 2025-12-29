@@ -11,8 +11,17 @@ import java.util.Map;
  * Read-only view of a voxel world.
  *
  * <p>
- *     This interface exposes safe, immutable access to world data.
- *     Implementations must not allow mutation of the underlying world state.
+ *     Implementations of this interface MUST NOT cause world mutation.
+ *     In particular::
+ * </p>
+ *
+ * <ul>
+ *     <li> Chunk generation MUST NOT be triggered </li>
+ *     <li> Missing chunks MUST be trated as AIR </li>
+ * </ul>
+ *
+ * <p>
+ *     This interface is safe for rendering, querying and simulation systems.
  * </p>
  */
 public interface IWorldView {
@@ -23,7 +32,7 @@ public interface IWorldView {
      * @param position the chunk position
      * @return the chunk, or {@code null} if not present
      */
-    Chunk getChunk(ChunkPosition position);
+    Chunk getChunkIfPresent(ChunkPosition position);
 
     /**
      * Returns an immutable view of the loaded chunks.

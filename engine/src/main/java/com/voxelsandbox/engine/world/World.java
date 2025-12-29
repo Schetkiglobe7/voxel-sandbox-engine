@@ -3,7 +3,6 @@ package com.voxelsandbox.engine.world;
 import com.voxelsandbox.engine.world.chunk.Chunk;
 import com.voxelsandbox.engine.world.chunk.ChunkPosition;
 import com.voxelsandbox.engine.world.chunk.LocalVoxelPosition;
-import com.voxelsandbox.engine.world.chunk.config.ChunkDimensions;
 import com.voxelsandbox.engine.world.coordinate.ChunkCoordinateMapper;
 import com.voxelsandbox.engine.world.generation.IWorldGenerator;
 import com.voxelsandbox.engine.world.type.VoxelType;
@@ -49,18 +48,22 @@ public final class World implements IWorldView {
      * Returns the loaded chunk at the given position, or {@code null}
      * if the chunk is not currently present.
      *
+     * <p>
+     *     This method never triggers chunk generation.
+     * </p>
+     *
      * @param position the chunk position
      * @return the chunk, or {@code null} if not present
      */
-    public Chunk getChunk(ChunkPosition position) {
-        return state.getChunk(position);
+    public Chunk getChunkIfPresent(ChunkPosition position) {
+        return state.getChunkIfPresent(position);
     }
 
     /**
      * Loads a chunk at the given position.
      * <p>
-     *     If the chunk is not present, it is generated and registered.
-     *     Otherwise, it is generated, registered and returned.
+     *     If the chunk is not already present, it is generated using the
+     *     configured world generator and registered in the world state.
      * </p>
      *
      * @param position the chunk position
@@ -123,7 +126,7 @@ public final class World implements IWorldView {
         }
         ChunkPosition chunkPos =
                 ChunkCoordinateMapper.toChunkPosition(worldX, worldY, worldZ);
-        Chunk chunk = state.getChunk(chunkPos);
+        Chunk chunk = state.getChunkIfPresent(chunkPos);
         if (chunk == null) {
             return VoxelType.AIR;
         }

@@ -31,12 +31,16 @@ final class WorldState {
     }
 
     /**
-     * Returns the chunk at the given position, or {@code null} if not present.
+     * Returns the chunk at the given position if it is already loaded.
+     *
+     * <p>
+     *     This method never generates or loads new chunks.
+     * </p>
      *
      * @param position the chunk position.
-     * @return the chunk or {@code null}
+     * @return the chunk if present, or {@code null} otherwise
      */
-    Chunk getChunk(ChunkPosition position) {
+    Chunk getChunkIfPresent(ChunkPosition position) {
         return chunks.get(position);
     }
 
@@ -51,8 +55,7 @@ final class WorldState {
     }
 
     /**
-     * Returns the chunk at the given position, generating and storing it
-     * if it does not already exist.
+     * Ensures that a chunk exists at the given position.
      *
      * <p>
      *     If a chunk is already present in the world state at the given position,
@@ -63,7 +66,7 @@ final class WorldState {
      * @param position the chunk position
      * @param generator the chunk generator strategy
      * @param seed the world seed used for deterministic generation
-     * @return the existing chunk if already present, or the newly generated chunk
+     * @return the existing chunk if already present, or the newly generated chunk.
      */
     Chunk ensureChunkPresent(
             ChunkPosition position,
