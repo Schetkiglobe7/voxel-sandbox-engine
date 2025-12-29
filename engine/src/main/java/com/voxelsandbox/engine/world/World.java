@@ -4,9 +4,12 @@ import com.voxelsandbox.engine.world.chunk.Chunk;
 import com.voxelsandbox.engine.world.chunk.ChunkPosition;
 import com.voxelsandbox.engine.world.chunk.LocalVoxelPosition;
 import com.voxelsandbox.engine.world.coordinate.ChunkCoordinateMapper;
+import com.voxelsandbox.engine.world.event.IWorldEventListener;
 import com.voxelsandbox.engine.world.generation.IWorldGenerator;
 import com.voxelsandbox.engine.world.type.VoxelType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -18,12 +21,17 @@ import java.util.Objects;
  *     The world acts as the context for a {@link IWorldGenerator} strategy,
  *     delegating chunk generation while managing chunk lifecycle.
  * </p>
+ *
+ * <p>
+ *     Event listeners are invoked concurrently. Implementations of
+ *     {@link IWorldEventListener} must therefore be thread-safe.
+ * </p>
  */
 public final class World implements IWorldView {
     private final long seed;
     private final IWorldGenerator generator;
     private final WorldState state = new WorldState();
-
+    private final List<IWorldEventListener> listeners = new ArrayList<>();
     public static final int MIN_Y = 0;
     public static final int MAX_Y = 256;
 
@@ -71,7 +79,21 @@ public final class World implements IWorldView {
      */
     public Chunk loadChunk(ChunkPosition position) {
         Objects.requireNonNull(position, "ChunkPosition must be not null");
-        return this.state.ensureChunkPresent(position, this.seed, this.generator);
+
+        Chunk existingChunk = this.state.getChunkIfPresent(position);
+
+        if (existingChunk != null) {
+            notifyChunkLoaded(existingChunk);
+            return existingChunk;
+        }
+
+        Chunk generatedChunk = this.generator.generateChunk(this.seed, position);
+        state.putChunk(generatedChunk);
+
+        notifyChunkGenerated(generatedChunk);
+        notifyChunkLoaded(generatedChunk);
+
+        return generatedChunk;
     }
 
     /**
@@ -173,5 +195,58 @@ public final class World implements IWorldView {
                 ChunkCoordinateMapper.toLocalVoxelPosition(worldX, worldY, worldZ);
 
         chunk.setVoxel(localPos, type);
+    }
+
+    /**
+     * Registers a world event listener.
+     *
+     * @param listener the listener to register
+     */
+    public void addEventListener(IWorldEventListener listener) {
+        Objects.requireNonNull(listener, "IWorldEventListener must not be null");
+        this.listeners.add(listener);
+    }
+
+    /**
+     * Notifies all registered {@link IWorldEventListener}s that a chunk
+     * has been generated.
+     *
+     * <p>
+     *     This event is emitted exactly once for a given chunk position,
+     *     immediately after the chunk has been created by the world generator
+     *     and registered in the world state.
+     * </p>
+     *
+     * <p>
+     *     This method does not perform any state mutation and is only responsible for event dispatch.
+     * </p>
+     *
+     * @param chunk the newly generated chunk
+     */
+    private void notifyChunkGenerated(Chunk chunk) {
+        listeners.forEach(listener -> listener.onChunkGenerated(chunk.getPosition(), chunk));
+    }
+
+    /**
+     * Notifies all registered {@link IWorldEventListener}s that a chunk has been loaded and is now available in the world state.
+     *
+     * <p>
+     *     This event is emitted both when:
+     * </p>
+     *
+     * <ul>
+     *     <li> a chunk is newly generated </li>
+     *     <li> a chunk already present in the world state is accessed again </li>
+     * </ul>
+     *
+     * <p>
+     *     Listeners may use this event to trigger rendering, caching,
+     *     or other read-only operations.
+     * </p>
+     *
+     * @param chunk the loaded chunks
+     */
+    private void notifyChunkLoaded(Chunk chunk) {
+        listeners.parallelStream().forEach(listener -> listener.onChunkLoaded(chunk.getPosition(), chunk));
     }
 }

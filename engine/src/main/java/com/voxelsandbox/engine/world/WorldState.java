@@ -54,25 +54,53 @@ final class WorldState {
         chunks.put(chunk.getPosition(), chunk);
     }
 
+// TODO: Da eliminare se non serve
+//    /**
+//     * Ensures that a chunk exists at the given position.
+//     *
+//     * <p>
+//     *     If a chunk is already present in the world state at the given position,
+//     *     that instance is returned. Otherwise, a new chunk is generated using
+//     *     the provided world generator and seed, registered internally, and returned.
+//     * </p>
+//     *
+//     * @param position the chunk position
+//     * @param generator the chunk generator strategy
+//     * @param seed the world seed used for deterministic generation
+//     * @return the existing chunk if already present, or the newly generated chunk.
+//     */
+//    Chunk ensureChunkPresent(
+//            ChunkPosition position,
+//            long seed,
+//            IWorldGenerator generator
+//    ) {
+//        return chunks.computeIfAbsent(position, pos -> generator.generateChunk(seed, pos));
+//    }
+
     /**
-     * Ensures that a chunk exists at the given position.
+     * Return whether a chunk is already present in the world state.
      *
      * <p>
-     *     If a chunk is already present in the world state at the given position,
-     *     that instance is returned. Otherwise, a new chunk is generated using
-     *     the provided world generator and seed, registered internally, and returned.
+     *     This method is intentionally provided to support a
+     *     <em>tell-don't-ask</em> interaction style between {@link World}
+     *     and its internal state.
      * </p>
      *
+     * <p>
+     *     Typical use cases include:
+     * </p>
+     *
+     * <ul>
+     *     <li> Detecting whether a chunk will be newly generated </li>
+     *     <li> Emitting lifecycle events (e.g. generates vs loaded) </li>
+     *     <li> Implementing lazy-loading policies </li>
+     * </ul>
+     *
      * @param position the chunk position
-     * @param generator the chunk generator strategy
-     * @param seed the world seed used for deterministic generation
-     * @return the existing chunk if already present, or the newly generated chunk.
+     * @return {@code true} if a chunk is already present at the given position,
+     *         {@code false} otherwise
      */
-    Chunk ensureChunkPresent(
-            ChunkPosition position,
-            long seed,
-            IWorldGenerator generator
-    ) {
-        return chunks.computeIfAbsent(position, pos -> generator.generateChunk(seed, pos));
+    boolean isChunkPresent(ChunkPosition position) {
+        return chunks.containsKey(position);
     }
 }
