@@ -80,4 +80,20 @@ final class WorldState {
     boolean isChunkPresent(ChunkPosition position) {
         return chunks.containsKey(position);
     }
+
+    /**
+     * Rwmoves and returns the chunk at the given position if present.
+     *
+     * <p>
+     *     This method performa a pure state mutation:
+     *     no events are emitted and no generation is triggered.
+     * </p>
+     *
+     * @param position the chunk position
+     * @return the removed chunk, or {@code null} if not present
+     */
+    Chunk removeChunk(ChunkPosition position) {
+        Objects.requireNonNull(position, "ChunkPosition must be not null");
+        return chunks.remove(position);
+    }
 }

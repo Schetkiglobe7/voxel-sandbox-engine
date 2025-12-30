@@ -35,4 +35,17 @@ public interface IWorldEventListener {
      * @param chunk the loaded chunk
      */
     default void onChunkLoaded(ChunkPosition position, Chunk chunk) {}
+
+    /**
+     * Called when a chunk is unloaded and removed from the world state.
+     *
+     * <p>
+     *     This event is emitted exactly once for each chunk that is
+     *     successfully unloaded.
+     * </p>
+     *
+     * @param position the chunk position
+     * @param chunk the unloaded chunk
+     */
+    default void onChunkUnloaded(ChunkPosition position, Chunk chunk) {}
 }

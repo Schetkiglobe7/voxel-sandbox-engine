@@ -5,6 +5,7 @@ import com.voxelsandbox.engine.world.chunk.ChunkPosition;
 import com.voxelsandbox.engine.world.chunk.LocalVoxelPosition;
 import com.voxelsandbox.engine.world.coordinate.ChunkCoordinateMapper;
 import com.voxelsandbox.engine.world.event.IWorldEventListener;
+import com.voxelsandbox.engine.world.eviction.IChunkEvictionPolicy;
 import com.voxelsandbox.engine.world.generation.IWorldGenerator;
 import com.voxelsandbox.engine.world.type.VoxelType;
 
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.StreamSupport;
 
 
 /**
@@ -198,6 +200,62 @@ public final class World implements IWorldView {
     }
 
     /**
+     * Unloads the chunk at the given position if present.
+     *
+     * <p>
+     *     This method removes the chunk from the world state without triggering
+     *     generation or loading of any other chunks.
+     * </p>
+     *
+     * <p>
+     *     If the chunk was present, it is removed and a corresponding to unload event
+     *     is emitted. If the chunk not present, this method is a no-op and returns {@code null}.
+     * </p>
+     *
+     * @param position the chunk position
+     * @return the removed chunk, or {@code null} if no chunk was present
+     */
+    public Chunk unloadChunk(ChunkPosition position) {
+        Objects.requireNonNull(position, "ChunkPosition must be not null");
+
+        Chunk removed = this.state.removeChunk(position);
+        if (removed != null) {
+            notifyChunkUnloaded(removed);
+        }
+        return removed;
+    }
+
+    /**
+     * Applies a chunk eviction policy using the given focus position.
+     *
+     * <p>
+     *     This method delegates a candidate seleciton to the provided eviction policy
+     *     and unloads all selected chunks from the world state.
+     * </p>
+     *
+     * <p>
+     *     Chunk unload events are emitted for each successfully unload chunk.
+     * </p>
+     *
+     * @param policy the eviction policy to apply.
+     * @param focus the reference chunk position (e.g. player or camera)
+     * @return the number of unloaded chunks
+     */
+    public int applyEvictionPolicy(
+            IChunkEvictionPolicy policy,
+            ChunkPosition focus
+    ) {
+        Objects.requireNonNull(policy, "ChunkEvictionPolicy must be not null");
+        Objects.requireNonNull(focus, "Focus ChunkPosition must be not null");
+
+        return (int) StreamSupport
+                .stream(policy.selectEvictionCandidates(this, focus).spliterator(), false)
+                .map(this::unloadChunk)
+                .filter(Objects::nonNull)
+                .count();
+    }
+
+    /**
      * Registers a world event listener.
      *
      * @param listener the listener to register
@@ -247,6 +305,21 @@ public final class World implements IWorldView {
      * @param chunk the loaded chunks
      */
     private void notifyChunkLoaded(Chunk chunk) {
-        listeners.parallelStream().forEach(listener -> listener.onChunkLoaded(chunk.getPosition(), chunk));
+        listeners.forEach(listener -> listener.onChunkLoaded(chunk.getPosition(), chunk));
+    }
+
+    /**
+     * Notifies all registered {@link IWorldEventListener}s that a chunk
+     * has been unloaded and removed from the world state.
+     *
+     * <p>
+     *     This event is emitted only if the chunk was actually present
+     *     and successfully removed.
+     * </p>
+     *
+     * @param chunk the unloaded chunk
+     */
+    private void notifyChunkUnloaded(Chunk chunk) {
+        listeners.forEach(listener -> listener.onChunkUnloaded(chunk.getPosition(), chunk));
     }
 }
