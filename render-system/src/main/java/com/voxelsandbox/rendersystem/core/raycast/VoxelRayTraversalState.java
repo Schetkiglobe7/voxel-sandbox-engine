@@ -158,6 +158,10 @@ public final class VoxelRayTraversalState {
         this.stepY = stepY;
         this.stepZ = stepZ;
 
+        this.tMaxX = tMaxX;
+        this.tMaxY = tMaxY;
+        this.tMaxZ = tMaxZ;
+
         this.tDeltaX = tDeltaX;
         this.tDeltaY = tDeltaY;
         this.tDeltaZ = tDeltaZ;
