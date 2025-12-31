@@ -10,7 +10,7 @@
 
 ![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
 [![Contributor Covenant](https://img.shields.io/badge/contributor%20covenant-v1.4-ff69b4.svg)](CODE_OF_CONDUCT.md)
-![Status](https://img.shields.io/badge/status-engine%20pre--release%201.0.0-blue)
+![Status](https://img.shields.io/badge/status-engine%20pre--release%201.0.1-blue)
 
 </div>
 
@@ -37,11 +37,11 @@ while rendering, persistence, and tooling layers are planned as separate modules
 
 ## Project Status
 
-🧊 **Engine Core: Pre-release v1.0.0**
+🧊 **Engine Core: Pre-release v1.0.1**
 
 The engine core has reached its first stable architectural milestone.
 
-Starting from `engine-v1.0.0`, the **public engine API is considered frozen**
+Starting from `engine-v1.0.1`, the **public engine API is considered frozen**
 for the `v1.x` line. Breaking changes will only be introduced in a future
 major version.
 
@@ -145,7 +145,7 @@ Before contributing, please read:
 For architectural or API-impacting changes, opening an issue or discussion
 before implementation is strongly encouraged.
 
-Engine APIs are considered stable starting from `engine-v1.0.0`.
+Engine APIs are considered stable starting from `engine-v1.0.1`.
 Any breaking change requires a major version bump.
 
 ---
