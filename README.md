@@ -10,7 +10,7 @@
 
 ![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
 [![Contributor Covenant](https://img.shields.io/badge/contributor%20covenant-v1.4-ff69b4.svg)](CODE_OF_CONDUCT.md)
-![Status](https://img.shields.io/badge/status-pre--alpha-orange)
+![Status](https://img.shields.io/badge/status-engine%20pre--release%201.0.0-blue)
 
 </div>
 
@@ -18,49 +18,118 @@
 
 ## Overview
 
-Voxel Sandbox Engine is an experimental open-source project aimed at building a modern, scalable, and maintainable voxel-based engine.
+Voxel Sandbox Engine is an open-source project focused on building a **modern,
+scalable, and maintainable voxel engine core**.
 
-The project explores engine design choices that go beyond traditional voxel engines. In particular, it focuses on maintaining a clear separation between engine logic and game content, adopting a data-driven and database-backed world representation, and designing systems that support efficient world streaming while remaining extensible over time.
+The project explores engine design choices that go beyond traditional voxel
+engines, with particular emphasis on:
 
-This repository represents the technical foundation of the engine rather than a finished or playable game.
+- clear separation between engine logic and game content
+- deterministic and testable world behavior
+- explicit chunk lifecycle and streaming semantics
+- extensibility toward rendering, persistence, and tooling layers
+
+This repository represents the **technical foundation of the engine**.
+The core engine module is implemented and released as a **pre-release (v1.0.0)**,
+while rendering, persistence, and tooling layers are planned as separate modules.
 
 ---
 
 ## Project Status
 
-🚧 **Pre-alpha**
+🧊 **Engine Core: Pre-release v1.0.0**
 
-The project is currently in an early setup and design phase. At this stage, no rendering system, gameplay mechanics, or world logic are implemented. The primary focus is on establishing repository structure, open-source governance, and solid architectural groundwork.
+The engine core has reached its first stable architectural milestone.
 
-All engine subsystems and features will be introduced incrementally, with design decisions documented as they are made.
+Starting from `engine-v1.0.0`, the **public engine API is considered frozen**
+for the `v1.x` line. Breaking changes will only be introduced in a future
+major version.
+
+### Implemented
+- Chunk-based voxel world model
+- Deterministic, seed-based world generation
+- World bounds handling
+- Chunk lifecycle management (generate / load / unload)
+- Event-based world notifications with ordering guarantees
+- Chunk streaming controllers (distance-based and fuzzy)
+- Pluggable chunk eviction policies
+- Deterministic and idempotent streaming behavior
+- Extensive unit test coverage for world and streaming logic
+
+### Not Implemented Yet
+- Rendering system (OpenGL, Vulkan under evaluation)
+- Persistence layer (database-backed world storage)
+- Asset pipeline
+- Gameplay systems
+- Tooling and editor support
 
 ---
 
-## Planned Architecture
+## Architecture Overview
 
-The engine is planned to be composed of clearly separated layers, each with a well-defined responsibility.
+The engine is structured around **clearly separated layers**, each with a
+well-defined responsibility.
 
-At its core, the engine will manage application lifecycle concerns, platform abstraction, configuration, and logging. On top of this foundation, a rendering layer is planned, based on OpenGL, with chunk-oriented mesh generation and GPU-friendly data structures.
+### Engine Core (Implemented)
 
-World representation and persistence will be handled by a dedicated world and data layer. This layer is intended to support a chunk-based voxel model, database-backed persistence, and spatial queries to enable efficient world streaming.
+The engine core manages:
+- world state and chunk lifecycle
+- deterministic world generation
+- streaming and eviction policies
+- event-based observation of world changes
 
-An asset system is also planned, responsible for texture and asset management, data-driven configuration, and support for multiple content packs. None of these components are implemented yet, and their design will evolve as the project progresses.
+This layer is **rendering-agnostic** and **persistence-agnostic** by design.
+
+### Rendering Layer (Planned)
+
+A dedicated rendering module will:
+- consume read-only world state
+- generate chunk-oriented meshes
+- manage GPU resources independently from engine logic
+
+The initial implementation will target OpenGL, with Vulkan evaluated as a
+future alternative.
+
+### Persistence & Data Layer (Planned)
+
+A persistence module will:
+- store chunk data beyond runtime
+- support large or unbounded worlds
+- provide spatial indexing and efficient loading
+
+Database-backed storage (e.g. PostgreSQL with spatial extensions) is planned.
+
+### Assets & Tooling (Planned)
+
+Future modules will address:
+- data-driven voxel and block definitions
+- asset pipelines and content packs
+- developer tools, debugging, and inspection utilities
 
 ---
 
-## Non-Goals
+## Architectural Decision Records (ADR)
 
-At least in its early stages, this project does not aim to replicate an existing commercial game, provide a complete game out of the box, or prioritize visual fidelity over architectural soundness.
+Significant architectural decisions are documented as
+**Architectural Decision Records (ADR)** in the [`ADR/`](ADR/) directory.
 
-The primary objective is to build a solid and extensible technical foundation that can support experimentation and future development.
+ADRs capture:
+- design context
+- decisions taken
+- consequences and trade-offs
+
+They serve as the authoritative source for architectural intent and evolution.
 
 ---
 
 ## Roadmap
 
-A high-level roadmap will be introduced once the core architectural decisions are finalized.
+The high-level project roadmap is maintained in [`ROADMAP.md`](ROADMAP.md).
 
-Until then, progress is tracked through GitHub Issues and Pull Requests, with significant design choices recorded as Architectural Decision Records (ADR).
+Progress is tracked through:
+- GitHub Issues and Pull Requests
+- versioned releases
+- Architectural Decision Records (ADR)
 
 ---
 
@@ -68,7 +137,16 @@ Until then, progress is tracked through GitHub Issues and Pull Requests, with si
 
 Community contributions are welcome.
 
-Before contributing, please read the Contributing Guide, the Code of Conduct, and the Security Policy. For larger changes or architectural proposals, opening a discussion or issue before starting implementation is strongly encouraged.
+Before contributing, please read:
+- the Contributing Guide
+- the Code of Conduct
+- the Security Policy
+
+For architectural or API-impacting changes, opening an issue or discussion
+before implementation is strongly encouraged.
+
+Engine APIs are considered stable starting from `engine-v1.0.0`.
+Any breaking change requires a major version bump.
 
 ---
 
