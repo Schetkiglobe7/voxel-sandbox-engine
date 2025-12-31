@@ -30,7 +30,7 @@ engines, with particular emphasis on:
 - extensibility toward rendering, persistence, and tooling layers
 
 This repository represents the **technical foundation of the engine**.
-The core engine module is implemented and released as a **pre-release (v1.0.0)**,
+The core engine module is implemented and released as a **pre-release (v1.0.1)**,
 while rendering, persistence, and tooling layers are planned as separate modules.
 
 ---
