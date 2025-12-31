@@ -25,6 +25,11 @@ public final class ChunkDimensions {
      */
     public static final int SIZE_Z = 16;
 
+    /**
+     * Number of voxels along the X, Y and Z axises.
+     */
+    public static final int CHUNK_SIZE = SIZE_X * SIZE_Y * SIZE_Z;
+
     private ChunkDimensions() {
         // utility class
     }

@@ -9,3 +9,4 @@
 rootProject.name = "voxel-sandbox-engine"
 
 include("engine")
+include("render-system")
