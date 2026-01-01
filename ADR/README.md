@@ -106,14 +106,15 @@ Code changes that contradict an accepted ADR must either:
 
 ## Current ADR Index
 
-|   ID | Title                                    | Status   |
-|-----:|------------------------------------------|----------|
-| 0001 | Engine Scope and Responsibilities        | Accepted |
-| 0002 | World and Chunk Model                    | Accepted |
-| 0003 | Chunk Lifecycle and Events               | Accepted |
-| 0004 | World Streaming & Eviction               | Accepted |
-| 0005 | Engine Module Boundaries & API Stability | Accepted |
-| 0006 | CPU Voxel Ray Traversal using DDA        | Accepted |
+|   ID | Title                                            | Status   |
+|-----:|--------------------------------------------------|----------|
+| 0001 | Engine Scope and Responsibilities                | Accepted |
+| 0002 | World and Chunk Model                            | Accepted |
+| 0003 | Chunk Lifecycle and Events                       | Accepted |
+| 0004 | World Streaming & Eviction                       | Accepted |
+| 0005 | Engine Module Boundaries & API Stability         | Accepted |
+| 0006 | CPU Voxel Ray Traversal using DDA                | Accepted |
+| 0006 | Render Stage Contract and Frame-Driven Pipeline  | Accepted |
 
 ---
 
