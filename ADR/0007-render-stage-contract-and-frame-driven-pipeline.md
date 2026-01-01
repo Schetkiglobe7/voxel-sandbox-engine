@@ -1,4 +1,4 @@
-# ADR 0006: Render Stage Contract and Frame-Driven Pipeline
+# ADR 0007: Render Stage Contract and Frame-Driven Pipeline
 
 ## Status
 Accepted
