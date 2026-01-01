@@ -53,6 +53,21 @@ public interface IRenderPipeline {
      *     <li> mutate external state </li>
      * </ul>
      *
+     * <p>
+     *     The pipeline MUST validate that all required inputs declared
+     *     by each {@link IRenderStage} are present in the {@link RenderFrame}
+     *     before executing the stage.
+     * </p>
+     *
+     * <p>
+     *     After executing each stage, the pipeline MUST verify that all
+     *     frame keys declared as produced outputs have been written
+     *     to the {@link RenderFrame}.
+     * </p>
+     *
+     *  *
+     *  * @throws IllegalStateException if a stage requires a missing FrameKey
+     *
      * @param frame render frame shared across stages
      *
      * @throws NullPointerException if {@code frame} is {@code null}

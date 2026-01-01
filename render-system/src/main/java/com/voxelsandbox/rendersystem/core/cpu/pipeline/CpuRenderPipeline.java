@@ -54,10 +54,43 @@ public class CpuRenderPipeline implements IRenderPipeline {
      */
     @Override
     public void execute(RenderFrame frame) {
-        Objects.requireNonNull(frame, "frame must not be null");
 
         stages.forEach(stage -> {
+            Objects.requireNonNull(stage, "stage must not be null");
+
             frame.validateBeforeStage(stage.getId());
+
+            stage.getRequiredInputs().forEach(key -> {
+               if (!frame.contains(key)) {
+                   throw new IllegalStateException(
+                           "RenderStage '" + stage.getId() +
+                           "' requires missing FrameKey: " + key
+                   );
+               }
+            });
+
+            stage.execute(frame);
+
+            stage.getProducedOutputs().forEach(key -> {
+                if (!frame.contains(key)) {
+                    throw new IllegalStateException(
+                            "RenderStage '" + stage.getId() +
+                                    "' did not produce declared FrameKey: " + key
+                    );
+                }
+            });
+
+            frame.validateAfterStage(stage.getId());
+        });
+
+
+
+        stages.forEach(stage -> {
+            frame.beginStage(
+                    stage.getId(),
+                    stage.getRequiredInputs(),
+                    stage.getProducedOutputs()
+            );
 
             stage.execute(frame);
 

@@ -1,6 +1,7 @@
 package com.voxelsandbox.rendersystem.core.frame;
 
 import java.util.Optional;
+import java.util.Set;
 
 
 /**
@@ -49,7 +50,8 @@ public interface RenderFrame {
      * @param value value to associate
      * @param <T> value type
      *
-     * @throws IllegalStateException if the key is already present
+     * @throws IllegalStateException if the key has already been written
+     *                               during the current frame
      */
     <T> void put(FrameKey<T> key, T value);
 
@@ -109,6 +111,24 @@ public interface RenderFrame {
     default void validateAfterStage(String stageId) {
         // no-op by default
     }
+
+    /**
+     * Notifies the frame that a render stage is about to execute.
+     *
+     * <p>
+     *     This method establishes the execution contract for the stage,
+     *     allowing the frame to enforce input/output constraints.
+     * </p>
+     *
+     * @param stageId stage identifier
+     * @param requiredInputs keys that must already exist in the frame
+     * @param producedOutputs keys that must be written by the stage
+     */
+    void beginStage(
+            String stageId,
+            Set<FrameKey<?>> requiredInputs,
+            Set<FrameKey<?>> producedOutputs
+    );
 
     /**
      * Clears all data stored in this frame.
