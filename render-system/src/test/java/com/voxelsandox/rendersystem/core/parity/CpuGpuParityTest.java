@@ -1,4 +1,4 @@
-package com.voxelsandox.rendersystem.core.party;
+package com.voxelsandox.rendersystem.core.parity;
 
 import com.voxelsandbox.rendersystem.core.chunk.IRenderChunkView;
 import com.voxelsandbox.rendersystem.core.loop.IRenderLoop;

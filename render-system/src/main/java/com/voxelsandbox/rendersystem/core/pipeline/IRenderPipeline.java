@@ -1,6 +1,7 @@
 package com.voxelsandbox.rendersystem.core.pipeline;
 
 import com.voxelsandbox.rendersystem.core.frame.RenderFrame;
+import com.voxelsandbox.rendersystem.core.pipeline.stage.IRenderStage;
 
 
 /**

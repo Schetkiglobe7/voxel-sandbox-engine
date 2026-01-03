@@ -2,7 +2,7 @@ package com.voxelsandbox.rendersystem.core.cpu.pipeline;
 
 import com.voxelsandbox.rendersystem.core.frame.RenderFrame;
 import com.voxelsandbox.rendersystem.core.pipeline.IRenderPipeline;
-import com.voxelsandbox.rendersystem.core.pipeline.IRenderStage;
+import com.voxelsandbox.rendersystem.core.pipeline.stage.IRenderStage;
 
 import java.util.List;
 import java.util.Objects;
@@ -54,49 +54,29 @@ public class CpuRenderPipeline implements IRenderPipeline {
      */
     @Override
     public void execute(RenderFrame frame) {
+        Objects.requireNonNull(frame, "frame must not be null");
 
-        stages.forEach(stage -> {
+        for (IRenderStage stage : stages) {
             Objects.requireNonNull(stage, "stage must not be null");
 
-            frame.validateBeforeStage(stage.getId());
-
-            stage.getRequiredInputs().forEach(key -> {
-               if (!frame.contains(key)) {
-                   throw new IllegalStateException(
-                           "RenderStage '" + stage.getId() +
-                           "' requires missing FrameKey: " + key
-                   );
-               }
-            });
-
-            stage.execute(frame);
-
-            stage.getProducedOutputs().forEach(key -> {
-                if (!frame.contains(key)) {
-                    throw new IllegalStateException(
-                            "RenderStage '" + stage.getId() +
-                                    "' did not produce declared FrameKey: " + key
-                    );
-                }
-            });
-
-            frame.validateAfterStage(stage.getId());
-        });
-
-
-
-        stages.forEach(stage -> {
+            // 1 Declare execution contract
             frame.beginStage(
                     stage.getId(),
                     stage.getRequiredInputs(),
                     stage.getProducedOutputs()
             );
 
+            // 2 Optional pre-stage validation hook
+            frame.validateBeforeStage(stage.getId());
+
+            // 3 Execute stage
             stage.execute(frame);
 
+            // 4 Post-stage validation
             frame.validateAfterStage(stage.getId());
-        });
+        }
 
+        // 5 End-of-frame validation
         frame.validateEndOfFrame();
     }
 }

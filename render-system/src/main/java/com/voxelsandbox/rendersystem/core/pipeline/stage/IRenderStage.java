@@ -1,4 +1,4 @@
-package com.voxelsandbox.rendersystem.core.pipeline;
+package com.voxelsandbox.rendersystem.core.pipeline.stage;
 
 import com.voxelsandbox.rendersystem.core.frame.FrameKey;
 import com.voxelsandbox.rendersystem.core.frame.RenderFrame;
