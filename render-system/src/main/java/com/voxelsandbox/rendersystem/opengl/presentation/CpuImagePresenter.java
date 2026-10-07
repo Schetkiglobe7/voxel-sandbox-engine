@@ -2,6 +2,7 @@ package com.voxelsandbox.rendersystem.opengl.presentation;
 
 import com.voxelsandbox.rendersystem.cpu.target.CpuRenderTarget;
 import org.lwjgl.system.MemoryUtil;
+import java.nio.ByteBuffer;
 import static org.lwjgl.opengl.GL33C.*;
 
 /** Displays a CPU image as a nearest-filtered OpenGL texture. No voxel rendering runs on the GPU. */
@@ -9,6 +10,7 @@ public final class CpuImagePresenter implements AutoCloseable {
     private int texture;
     private int program;
     private int vao;
+    private ByteBuffer pixels;
     private final int width;
     private final int height;
 
@@ -24,20 +26,28 @@ public final class CpuImagePresenter implements AutoCloseable {
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-            var pixels = MemoryUtil.memAlloc(Math.multiplyExact(Math.multiplyExact(width,height),4));
-            try {
-                // CPU images are top-down. The shader samples with the same orientation.
-                for (int y=0;y<height;y++) for (int x=0;x<width;x++) {
-                    int argb = image.getPixel(x,y);
-                    pixels.put((byte)(argb>>>16)).put((byte)(argb>>>8)).put((byte)argb).put((byte)(argb>>>24));
-                }
-                pixels.flip();
-                glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA8,width,height,0,GL_RGBA,GL_UNSIGNED_BYTE,pixels);
-            } finally { MemoryUtil.memFree(pixels); }
+            pixels = MemoryUtil.memAlloc(Math.multiplyExact(Math.multiplyExact(width,height),4));
+            glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA8,width,height,0,GL_RGBA,GL_UNSIGNED_BYTE,(ByteBuffer)null);
+            update(image);
         } catch (RuntimeException | Error failure) {
             close();
             throw failure;
         }
+    }
+
+    /** Reuses the existing texture and staging buffer; dimensions remain fixed for this presenter. */
+    public void update(CpuRenderTarget image) {
+        if (pixels == null || texture == 0) throw new IllegalStateException("Presenter is closed");
+        if (image.getWidth() != width || image.getHeight() != height) throw new IllegalArgumentException("Image dimensions changed");
+        pixels.clear();
+        // CPU images are top-down; the shader samples with the same orientation.
+        for (int y=0;y<height;y++) for (int x=0;x<width;x++) {
+            int argb = image.getPixel(x,y);
+            pixels.put((byte)(argb>>>16)).put((byte)(argb>>>8)).put((byte)argb).put((byte)(argb>>>24));
+        }
+        pixels.flip();
+        glBindTexture(GL_TEXTURE_2D,texture);
+        glTexSubImage2D(GL_TEXTURE_2D,0,0,0,width,height,GL_RGBA,GL_UNSIGNED_BYTE,pixels);
     }
 
     private static int compile(int type,String source) {
@@ -103,6 +113,7 @@ public final class CpuImagePresenter implements AutoCloseable {
         glDrawArrays(GL_TRIANGLES,0,3);
     }
     @Override public void close() {
+        if (pixels != null) { MemoryUtil.memFree(pixels); pixels=null; }
         if (texture != 0) { glDeleteTextures(texture); texture=0; }
         if (vao != 0) { glDeleteVertexArrays(vao); vao=0; }
         if (program != 0) { glDeleteProgram(program); program=0; }

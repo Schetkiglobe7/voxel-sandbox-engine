@@ -1,6 +1,7 @@
 package com.voxelsandbox.rendersystem.demo;
 
 import com.voxelsandbox.rendersystem.cpu.target.CpuRenderTarget;
+import com.voxelsandbox.rendersystem.demo.camera.*;
 import com.voxelsandbox.rendersystem.opengl.internal.OpenGLContextBootstrap;
 import com.voxelsandbox.rendersystem.opengl.internal.OpenGLWindow;
 import com.voxelsandbox.rendersystem.opengl.presentation.CpuImagePresenter;
@@ -10,7 +11,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL33C.*;
 import java.nio.file.Path;
 
-/** Static CPU world preview with a native window; --smoke validates real OpenGL without waiting for input. */
+/** Interactive CPU world preview with a native window; --smoke validates real OpenGL without waiting for input. */
 public final class OpenGLPreviewDemo {
     private OpenGLPreviewDemo() {}
     public static void main(String[] args) throws Exception {
@@ -18,21 +19,46 @@ public final class OpenGLPreviewDemo {
             throw new IllegalArgumentException("Usage: OpenGLPreviewDemo [--smoke]");
         boolean smoke = args.length == 1;
         if (smoke) verifyContextLifecycle();
-        var image = CpuRenderDemo.render(320,200);
+        var preview = new InteractiveCpuPreview(CpuRenderDemo.createRenderer(),320,200);
+        var image = preview.image();
+        var controls = new GlfwCameraInput();
         try (var window = new OpenGLWindow()) {
             window.initialize(smoke ? 320 : 960,smoke ? 200 : 600,"Voxel Sandbox — CPU world preview",!smoke);
             glfwSwapInterval(smoke ? 0 : 1);
+            if (!smoke) System.out.println("WASD move | Q/E down/up | arrows or right-drag look | Shift fast | R reset | Esc close");
             System.out.println("OpenGL " + glGetString(GL_VERSION) + " / " + glGetString(GL_RENDERER));
             try (var presenter = new CpuImagePresenter(image); var stack = MemoryStack.stackPush()) {
                 var width = stack.mallocInt(1);
                 var height = stack.mallocInt(1);
+                double previousTime = glfwGetTime();
                 do {
-                    glfwPollEvents();
+                    // Render on demand; the short event wait avoids spinning while idle/minimized.
+                    if (smoke) glfwPollEvents(); else glfwWaitEventsTimeout(1.0/60.0);
+                    double now = glfwGetTime();
+                    double elapsed = now-previousTime;
+                    previousTime = now;
                     if (glfwGetKey(window.handle(),GLFW_KEY_ESCAPE) == GLFW_PRESS)
                         glfwSetWindowShouldClose(window.handle(),true);
+                    if (glfwWindowShouldClose(window.handle())) break;
                     glfwGetFramebufferSize(window.handle(),width,height);
+                    if (!smoke) {
+                        boolean enabled = glfwGetWindowAttrib(window.handle(),GLFW_FOCUSED) == GLFW_TRUE
+                                && glfwGetWindowAttrib(window.handle(),GLFW_ICONIFIED) == GLFW_FALSE
+                                && width.get(0) > 0 && height.get(0) > 0;
+                        if (preview.update(controls.sample(window.handle(),enabled),elapsed)) {
+                            image = preview.image();
+                            presenter.update(image);
+                        }
+                    }
                     presenter.draw(width.get(0),height.get(0));
                     if (smoke) {
+                        verifyPixels(image,width.get(0),height.get(0));
+                        var beforeMove = image;
+                        preview.update(new CameraInput(1,0,0,1,0,0,0,false,false),.1);
+                        image = preview.image();
+                        if (!differentPixels(beforeMove,image)) throw new IllegalStateException("Camera movement did not change the CPU image");
+                        presenter.update(image);
+                        presenter.draw(width.get(0),height.get(0));
                         verifyPixels(image,width.get(0),height.get(0));
                         glfwSetWindowSize(window.handle(),401,257);
                         glfwPollEvents();
@@ -43,13 +69,24 @@ public final class OpenGLPreviewDemo {
                         glfwGetFramebufferSize(window.handle(),width,height);
                         presenter.draw(width.get(0),height.get(0));
                         verifyPixels(image,width.get(0),height.get(0));
+                        preview.update(new CameraInput(0,0,0,0,0,0,0,false,true),0);
+                        image = preview.image();
+                        if (differentPixels(beforeMove,image)) throw new IllegalStateException("Reset did not restore the original CPU image");
+                        presenter.update(image);
+                        presenter.draw(width.get(0),height.get(0));
+                        verifyPixels(image,width.get(0),height.get(0));
                     }
                     glfwSwapBuffers(window.handle());
                     if (smoke) break;
                 } while (!glfwWindowShouldClose(window.handle()));
             }
         }
-        if (smoke) System.out.println("OpenGL smoke OK: lifecycle, texture presentation, resized pixel readback and cleanup");
+        if (smoke) System.out.println("OpenGL smoke OK: lifecycle, camera movement/reset, texture updates, resized pixel readback and cleanup");
+    }
+    private static boolean differentPixels(CpuRenderTarget first,CpuRenderTarget second) {
+        for (int y=0;y<first.getHeight();y++) for (int x=0;x<first.getWidth();x++)
+            if (first.getPixel(x,y) != second.getPixel(x,y)) return true;
+        return false;
     }
     private static void verifyContextLifecycle() {
         try (var context = new OpenGLContextBootstrap()) {

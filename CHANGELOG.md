@@ -14,6 +14,10 @@ and adheres to [Semantic Versioning](https://semver.org/).
 Planned and ongoing work after the first engine pre-release.
 
 ### Added
+- Interactive CPU preview camera: WASD, Q/E, arrows/right-drag, Shift, and reset with R.
+- Display-free camera and pointer state tests, cached-frame integration tests, and
+  real texture-update/readback verification for movement and reset.
+- ADR 0012 for camera input, world reuse, cached frames, and texture updates.
 - Resizable native OpenGL preview of the CPU world image (`:render-system:runPreview`).
 - Native lifecycle and framebuffer sample verification (`:render-system:nativeSmoke`).
 - Display-free lifecycle tests for restart, partial failures, cleanup, and thread ownership.
@@ -44,6 +48,9 @@ Planned and ongoing work after the first engine pre-release.
 - Source target packages accidentally excluded by the Maven ignore rule.
 
 ### Changed
+- The native preview retains its preloaded world and refreshes CPU pixels only on camera changes.
+- Texture storage and the direct upload buffer are reused across camera frames.
+- Preview input pauses when unfocused/minimized and reanchors mouse drags on re-entry.
 - README, architecture, and roadmap now describe implemented rendering foundations
   and the remaining CPU/GPU work.
 

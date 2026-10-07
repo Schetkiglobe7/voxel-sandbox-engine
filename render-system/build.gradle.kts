@@ -70,7 +70,7 @@ val renderRuntimeClasspath = sourceSets.main.get().runtimeClasspath
 
 tasks.register<JavaExec>("runPreview") {
     group = "application"
-    description = "Open a resizable OpenGL window showing the CPU world image (Escape to close)."
+    description = "Open a navigable CPU world preview (WASD, Q/E, arrows/right-drag, R reset, Escape to close)."
     classpath = renderRuntimeClasspath
     mainClass.set("com.voxelsandbox.rendersystem.demo.OpenGLPreviewDemo")
     jvmArgs(nativeJvmArgs)
@@ -78,7 +78,7 @@ tasks.register<JavaExec>("runPreview") {
 
 tasks.register<JavaExec>("nativeSmoke") {
     group = "verification"
-    description = "Verify real OpenGL context lifecycle and texture pixel readback; requires a desktop session."
+    description = "Verify OpenGL lifecycle, camera movement/reset, texture updates and pixel readback; requires a desktop session."
     classpath = renderRuntimeClasspath
     mainClass.set("com.voxelsandbox.rendersystem.demo.OpenGLPreviewDemo")
     jvmArgs(nativeJvmArgs)

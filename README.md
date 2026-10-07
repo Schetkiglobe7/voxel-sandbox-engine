@@ -117,7 +117,24 @@ Windows (PowerShell):
 .\gradlew.bat :render-system:runPreview
 ```
 
-Close with **Escape** or the window close button. The scene and camera are static;
+Close with **Escape** or the window close button. Camera controls:
+
+| Control | Action |
+|---------|--------|
+| W / S | Move forward / backward on the horizontal plane |
+| A / D | Move left / right relative to the camera |
+| Q / E | Move down / up |
+| Arrow keys | Look left / right / up / down |
+| Hold right mouse button and drag | Look around |
+| Hold Shift | Move three times faster |
+| R | Return to the initial camera view |
+
+The world is loaded once. Camera changes refresh the CPU image; idle frames reuse
+it and OpenGL updates the same texture. Input is suspended while the window is
+unfocused or minimized. The internal image stays 320 × 200 and resizing preserves
+its proportions. This remains a finite scene without collisions or streaming:
+if you move outside loaded chunks, the view becomes sky; use R to return.
+
 OpenGL presents the CPU image as a texture. This is not yet GPU voxel rendering.
 It requires a desktop session and OpenGL 3.3 or later. The Gradle task automatically
 adds `-XstartOnFirstThread` on macOS; no manual JVM flags are needed.
@@ -128,8 +145,9 @@ For a bounded native verification:
 ./gradlew :render-system:nativeSmoke
 ```
 
-This creates hidden windows, checks initialization/shutdown/restart, presents the
-world image, compares framebuffer samples to CPU pixels before and after resizing, and exits. Its readback
+This creates hidden windows, checks initialization/shutdown/restart, moves and resets
+the camera, updates the same texture, compares framebuffer samples to CPU pixels
+before and after resizing, and exits. Its readback
 is saved to `render-system/build/demo/opengl-world.png`. On Linux without a desktop,
 install Xvfb and Mesa and run `xvfb-run -a ./gradlew :render-system:nativeSmoke`.
 The regular tests and PNG demo remain display-free.

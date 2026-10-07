@@ -115,3 +115,11 @@ and OpenGL 3.3 driver. Inspect the generated `opengl-world.png` and manually che
 checks are separate from display-free unit tests; record which platforms actually
 ran them. Linux CI uses Xvfb and Mesa. Do not claim Windows/macOS GPU coverage from
 the headless matrix alone.
+
+
+For camera changes, check WASD, Q/E, Shift, arrows, right-button drag, and R in the
+preview. Losing focus or minimizing must pause movement; re-entering a drag must
+not jump. Resizing must preserve proportions. `nativeSmoke` validates actual
+texture refresh and exact pixel reset with scripted camera input; this supplements
+rather than replaces physical keyboard/mouse checks. Record manual and scripted
+verification separately.
