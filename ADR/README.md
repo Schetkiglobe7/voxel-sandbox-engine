@@ -119,6 +119,7 @@ Code changes that contradict an accepted ADR must either:
 | 0009 | RenderFrame & Stage Contract Enforcement         | Accepted |
 | 0010 | CPU World Image Pipeline                        | Accepted |
 | 0011 | Native Window and CPU Image Presentation         | Accepted |
+| 0012 | Interactive CPU Camera and Frame Refresh         | Accepted |
 
 ---
 
@@ -135,3 +136,6 @@ concrete batch traversal, read-only adapter, headless demo, and image output mod
 
 [ADR 0011: Native Window and CPU Image Presentation](0011-native-window-and-cpu-image-presentation.md)
 documents GLFW lifecycle ownership, texture presentation, and native verification.
+
+[ADR 0012: Interactive CPU Camera and Frame Refresh](0012-interactive-cpu-camera-and-frame-refresh.md)
+records input handling, frame caching, world reuse, and texture updates.

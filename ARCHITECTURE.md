@@ -278,11 +278,29 @@ thread. Hidden-context and legacy bootstrap helpers delegate to it. It cleans up
 partial initialization and rejects concurrent native owners. CPU stages and the
 engine remain independent of this lifecycle.
 
-`OpenGLPreviewDemo` renders one CPU image, then `CpuImagePresenter` uploads it as
+`OpenGLPreviewDemo` renders an initial CPU image, then `CpuImagePresenter` uploads it as
 RGBA and presents it through an OpenGL 3.3 core shader. The event loop uses physical
 framebuffer dimensions for high-DPI sizing and letterboxing; Escape and window
 close end the loop. Native resources close before the context is destroyed.
 
 `nativeSmoke` separately tests context restart, competing-owner rejection, resize, and real pixel readback. Mock driver
-tests exercise cleanup failures without a display. See ADR 0011. Movement and CPU
-frame refresh are the next milestone; this step introduces no GPU voxel traversal.
+tests exercise cleanup failures without a display. See ADR 0011. Interactive camera movement and CPU frame refresh build on this baseline; no GPU
+voxel traversal is introduced.
+
+
+## Interactive Camera and Cached Frames
+
+The preview owns a `PreviewCameraController` in its demo layer. A GLFW adapter
+turns held keys and cursor drags into immutable `CameraInput` snapshots; controller
+math depends only on those inputs and elapsed time. Pitch, combined movement, and
+stalled timesteps are bounded. Immutable camera snapshots feed the existing stages.
+
+`CpuWorldRenderer` retains one read-only world. `InteractiveCpuPreview` caches its
+pixel target until the pose changes; a render uses a fresh strict frame rather than
+retaining intermediate stage data. Presentation resize does not invalidate the
+fixed 320 × 200 image. Texture updates reuse GPU storage and one direct staging
+buffer, which closes before the native context. Unfocused/minimized windows do not
+advance the camera; releasing the drag or losing focus resets pointer history.
+
+No world generation, collision, or chunk streaming occurs in the input or rendering
+loop. See ADR 0012 for controls, timing, and remaining performance constraints.

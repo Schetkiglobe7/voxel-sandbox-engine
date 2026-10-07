@@ -79,18 +79,31 @@ Rendering, persistence, and tooling concerns were intentionally excluded.
 - Native smoke verification with real context lifecycle and GPU pixel readback
 - Display-free lifecycle failure tests and Linux Xvfb/Mesa CI job
 
+### Completed Interactive CPU Camera
+- WASD movement, Q/E vertical movement, arrows/right-drag rotation, Shift speed, R reset
+- Deterministic camera controller with normalized movement and bounded pitch/timestep
+- Preloaded world retained across frames; cached pixels refresh only when the pose changes
+- Texture and staging buffer reused for changed images
+- Input suspended on focus loss/minimization; pointer reanchors without a jump
+- Unit/integration tests and native smoke cover camera changes and exact reset
+
 ### Verification (2026-10-07)
 - macOS Apple M1: OpenGL 4.1 native smoke (including resize) and visible preview launch/exit verified
-- Full build, 62 passing tests, headless demos, and installed CPU launcher verified
+- Current interactive increment: full build and 71 passing tests verified locally on macOS
+- Native smoke verifies moved/reset texture updates and resized pixel readback on Apple M1
+- Visible preview launch/exit verified locally; scripted controls verified, physical keyboard/mouse checks pending
 - CPU PNG inspected; repeatability and lossless export covered by integration tests
-- GitHub CI: build, tests, and CPU demo passed on macOS, Windows, and Linux
+- Previous baseline GitHub CI: 62 tests, build, and CPU demo passed on all three systems
+- Current interactive increment: 71 tests, build, and CPU demo passed on macOS, Windows, and Linux
+- [Interactive CI run](https://github.com/Schetkiglobe7/voxel-sandbox-engine/actions/runs/37593243841) also verifies moved/reset texture updates under Linux Xvfb/Mesa
 - Linux native CI: context lifecycle and pixel readback passed with Xvfb/Mesa
 - [Verified CI run](https://github.com/Schetkiglobe7/voxel-sandbox-engine/actions/runs/37591761680) covers all four jobs
 - Windows native rendering requires desktop/driver validation; it is not yet verified
-- Published branch and draft [PR #1](https://github.com/Schetkiglobe7/voxel-sandbox-engine/pull/1)
+- Native baseline delivered in merged [PR #1](https://github.com/Schetkiglobe7/voxel-sandbox-engine/pull/1)
+- Interactive camera published in draft [PR #2](https://github.com/Schetkiglobe7/voxel-sandbox-engine/pull/2)
 
 ### Next Increment
-- Add camera controls and CPU image refresh to the visible preview
+- Extend the CPU reference with scene bounds and streaming around the moving camera
 - Validate the native Windows path on a suitable graphics driver
 - Implement GPU voxel rendering after the interactive CPU reference is established
 
