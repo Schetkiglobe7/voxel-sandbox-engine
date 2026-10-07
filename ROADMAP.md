@@ -84,7 +84,8 @@ Rendering, persistence, and tooling concerns were intentionally excluded.
 - Full build, 62 passing tests, headless demos, and installed CPU launcher verified
 - CPU PNG inspected; repeatability and lossless export covered by integration tests
 - GitHub CI: build, tests, and CPU demo passed on macOS, Windows, and Linux
-- Linux native CI: initial presentation passed; resize readback synchronization under verification
+- Linux native CI: context lifecycle and pixel readback passed with Xvfb/Mesa
+- [Verified CI run](https://github.com/Schetkiglobe7/voxel-sandbox-engine/actions/runs/37591761680) covers all four jobs
 - Windows native rendering requires desktop/driver validation; it is not yet verified
 - Published branch and draft [PR #1](https://github.com/Schetkiglobe7/voxel-sandbox-engine/pull/1)
 
