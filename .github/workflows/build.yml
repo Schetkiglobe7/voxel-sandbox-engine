@@ -18,6 +18,12 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
-      - name: Build, test and run headless bootstrap
+      - name: Build, test and run headless demos
         shell: bash
-        run: ./gradlew build :engine:run
+        run: ./gradlew build :engine:run :render-system:run
+      - name: Upload CPU world preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-world-${{ matrix.os }}
+          path: render-system/build/demo/voxel-world.png
+          if-no-files-found: error

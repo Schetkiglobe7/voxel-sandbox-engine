@@ -65,9 +65,10 @@ public final class CpuVoxelRayTraversal implements IVoxelRayTraversal {
             VoxelHitPredicate hitPredicate,
             VoxelVisitor visitor
     )  {
-        VoxelRayTraversalState state =
-                VoxelRayInitializer.initialize(ray);
+        validate(ray, maxDistance, worldView, hitPredicate);
+        VoxelRayTraversalState state = VoxelRayInitializer.initialize(ray);
 
+        Objects.requireNonNull(visitor, "visitor");
         float traveled = 0f;
 
         while (traveled <= maxDistance) {
@@ -84,8 +85,7 @@ public final class CpuVoxelRayTraversal implements IVoxelRayTraversal {
                     state.voxelX,
                     state.voxelY,
                     state.voxelZ,
-                    Math.min(state.tMaxX,
-                            Math.min(state.tMaxY, state.tMaxZ)),
+                    traveled,
                     ray.origin(),
                     ray.direction()
             );
@@ -102,17 +102,8 @@ public final class CpuVoxelRayTraversal implements IVoxelRayTraversal {
                 return;
             }
 
-            float prevT =
-                    Math.min(state.tMaxX,
-                            Math.min(state.tMaxY, state.tMaxZ));
-
+            traveled = Math.min(state.tMaxX, Math.min(state.tMaxY, state.tMaxZ));
             VoxelRayStepper.step(state);
-
-            float nextT =
-                    Math.min(state.tMaxX,
-                            Math.min(state.tMaxY, state.tMaxZ));
-
-            traveled += Math.abs(nextT - prevT);
         }
     }
 
@@ -149,8 +140,8 @@ public final class CpuVoxelRayTraversal implements IVoxelRayTraversal {
             IVoxelWorldView worldView,
             VoxelHitPredicate hitPredicate
     ) {
-        VoxelRayTraversalState state =
-                VoxelRayInitializer.initialize(ray);
+        validate(ray, maxDistance, worldView, hitPredicate);
+        VoxelRayTraversalState state = VoxelRayInitializer.initialize(ray);
 
         float t = 0f;
         Axis lastAxis = null;
@@ -171,7 +162,7 @@ public final class CpuVoxelRayTraversal implements IVoxelRayTraversal {
                     state.voxelZ
             )) {
 
-                Vec3f normal = switch (lastAxis) {
+                Vec3f normal = lastAxis == null ? new CpuVec3f(0, 0, 0) : switch (lastAxis) {
                     case X -> new CpuVec3f(-state.stepX, 0, 0);
                     case Y -> new CpuVec3f(0, -state.stepY, 0);
                     case Z -> new CpuVec3f(0, 0, -state.stepZ);
@@ -210,6 +201,20 @@ public final class CpuVoxelRayTraversal implements IVoxelRayTraversal {
         }
 
         return Optional.empty();
+    }
+
+    private static void validate(Ray3f ray, float distance, IVoxelWorldView world, VoxelHitPredicate predicate) {
+        Objects.requireNonNull(ray, "ray");
+        Objects.requireNonNull(world, "world");
+        Objects.requireNonNull(predicate, "predicate");
+        if (!Float.isFinite(distance) || distance <= 0) throw new IllegalArgumentException("Distance must be finite and positive");
+        Vec3f o = Objects.requireNonNull(ray.origin(), "origin");
+        Vec3f d = Objects.requireNonNull(ray.direction(), "direction");
+        if (!Float.isFinite(o.x()) || !Float.isFinite(o.y()) || !Float.isFinite(o.z())
+                || !Float.isFinite(d.x()) || !Float.isFinite(d.y()) || !Float.isFinite(d.z())
+                || Math.abs(d.lengthSquared() - 1f) > 0.0001f) {
+            throw new IllegalArgumentException("Ray requires finite origin and unit direction");
+        }
     }
 
     private enum Axis {

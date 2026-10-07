@@ -14,11 +14,20 @@ and adheres to [Semantic Versioning](https://semver.org/).
 Planned and ongoing work after the first engine pre-release.
 
 ### Added
+- Headless CPU world rendering demo with PNG export and portable application launchers.
+- Scene input and diagnostic pixel output stages composing the strict frame pipeline.
+- Integration tests for deterministic pixel output, PNG round trips, and negative coordinates.
+- CPU preview artifacts from the macOS, Windows, and Linux CI matrix.
+- ADR 0010 documenting the CPU world image pipeline and its scope.
+- Concrete CPU ray batch traversal stage with frame-scoped world and distance inputs.
+- Read-only engine voxel adapter and traversal/batch regression coverage.
 - Portable headless engine launcher and distributable launch scripts.
 - CPU ARGB render target and backend-independent target contract.
 - Build, test, and headless startup CI matrix for macOS, Windows, and Linux.
 
 ### Fixed
+- DDA hit normals when a ray starts inside solid voxels.
+- DDA visitor entry distances and traversal distance limits.
 - Missing Gradle Wrapper JAR in clean checkouts.
 - Missing render target classes preventing rendering module compilation.
 - Native dependency selection for host OS and x86-64/ARM64 architecture.

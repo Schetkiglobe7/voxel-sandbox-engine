@@ -49,7 +49,7 @@ The render system includes frame contract validation (ADRs 0007–0009), CPU
 camera and ray stages, voxel DDA traversal, and an in-memory ARGB render target.
 Render targets expose dimensions, frame boundaries, and pixel output independently
 of graphics APIs. CPU targets clear to transparent at frame start, reject writes
-outside a frame, and enforce pixel bounds. OpenGL rendering remains a placeholder.
+outside a frame, and enforce pixel bounds. OpenGL rendering remains a placeholder; the CPU preview is executable.
 
 Java 17 and the checked-in Gradle Wrapper provide the portable build. The engine
 application generates POSIX and Windows launch scripts. Native dependencies in
@@ -242,3 +242,30 @@ The Voxel Sandbox Engine provides a minimal but solid core focused on:
 
 It is intended to serve as a foundation upon which rendering, persistence,
 and gameplay systems can be built independently.
+
+## CPU Ray Traversal Integration
+
+`CpuRayBatchTraversalStage` reads origins, directions, batches, a read-only world,
+and a finite positive maximum distance exclusively from the frame. It validates
+exact batch coverage before traversal and publishes an immutable result list in
+original ray order. Hit positions are world-space intersection points; misses
+carry infinite distance. `EngineVoxelWorldAdapter` queries `IWorldView` without
+loading chunks and handles negative coordinates with floor division.
+
+DDA visits report voxel entry distances, stop at the first unloaded region, and
+include hits exactly at the distance limit. Starting inside solid returns distance
+zero and a zero normal. Directions must be finite unit vectors.
+
+
+## CPU World Preview
+
+The executable `CpuRenderDemo` assembles a world before rendering, then executes
+scene input, camera matrices, ray generation, batching, DDA traversal, and pixel
+output in a strict `CpuRenderFrame`. Rays and results use row-major pixel order.
+Batches describe contiguous slices, not spatial tiles. `CpuPixelOutputStage`
+allocates a fresh target, shades voxel faces diagnostically, and fills misses with
+sky color. PNG serialization runs outside the stages using Java ImageIO in
+headless mode. See ADR 0010.
+
+The demo does not initialize GLFW. It produces an image rather than an interactive
+window; native context validation and GPU rendering are still pending.

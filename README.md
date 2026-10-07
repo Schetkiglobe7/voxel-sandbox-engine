@@ -57,6 +57,7 @@ major version.
 - Pluggable chunk eviction policies
 - Deterministic and idempotent streaming behavior
 - Extensive unit test coverage for world and streaming logic
+- CPU rendering pipeline with concrete ray traversal and PNG world preview
 
 ### Not Implemented Yet
 - Complete GPU renderer (the OpenGL render loop remains a placeholder)
@@ -87,15 +88,33 @@ Windows (PowerShell):
 .\gradlew.bat :engine:run
 ```
 
-The current executable is a headless bootstrap and prints
-`Voxel Sandbox Engine bootstrap OK`. It does not display a voxel world yet.
+The engine executable is a headless bootstrap and prints
+`Voxel Sandbox Engine bootstrap OK`. The rendering demo generates a world image:
+
+```sh
+./gradlew :render-system:run
+# Optional output path (relative to the render-system directory):
+./gradlew :render-system:run --args="build/demo/custom-world.png"
+```
+
+On Windows use `.\gradlew.bat :render-system:run`.
+The default output is `render-system/build/demo/voxel-world.png` (320 × 200 pixels).
+The scene contains a flat voxel world and a stepped structure. Camera rays, DDA
+traversal, and diagnostic face shading run through the strict frame pipeline.
+The demo requires no display or GPU and does not open a window.
+
+Use `:render-system:installDist` to generate the rendering demo launchers and
+`:render-system:distZip` for an archive. Run `render-system` or `render-system.bat`
+from `render-system/build/install/render-system/bin`, optionally passing a PNG path.
+For installed launchers, relative output paths resolve against the current directory.
+
 Use `:engine:installDist` to generate launchers under `engine/build/install/engine/bin`;
 these require Java 17 at runtime. `:engine:distZip` creates a distributable archive.
 
 Native rendering dependencies are selected for the host OS and JVM architecture:
 macOS, Windows, and Linux support x86-64 and ARM64. Distributions of a future
 native renderer must be built separately for each target. The CI matrix builds,
-tests, and runs the headless bootstrap on all three operating systems.
+tests, runs both headless demos, and uploads a CPU preview on all three systems.
 
 CPU tests require no display or OpenGL driver. GLFW context creation requires a
 desktop session and an OpenGL driver; a hidden window is not a display-free context.

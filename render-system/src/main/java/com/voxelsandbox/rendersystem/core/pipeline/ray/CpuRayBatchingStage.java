@@ -41,6 +41,13 @@ public final class CpuRayBatchingStage implements IRenderStage {
         int width = frame.get(CameraViewportFrameKeys.VIEWPORT_WIDTH).orElseThrow();
         int height = frame.get(CameraViewportFrameKeys.VIEWPORT_HEIGHT).orElseThrow();
 
+        if (width <= 0 || height <= 0) throw new IllegalArgumentException("Viewport must be positive");
+        int count = Math.multiplyExact(width, height);
+        if (frame.get(CameraRayFrameKeys.RAY_ORIGINS).orElseThrow().size() != count
+                || frame.get(CameraRayFrameKeys.RAY_DIRECTIONS).orElseThrow().size() != count) {
+            throw new IllegalArgumentException("Ray buffers differ from viewport dimensions");
+        }
+        // Batches are contiguous slices of the row-major buffer, not spatial tiles.
         List<RayBatch> batches = new ArrayList<>();
 
         int index = 0;
@@ -51,11 +58,11 @@ public final class CpuRayBatchingStage implements IRenderStage {
                 int tileWidth = Math.min(TILE_SIZE, width - x);
                 int tileHeight = Math.min(TILE_SIZE, height - y);
 
-                int count = tileWidth * tileHeight;
+                int batchCount = tileWidth * tileHeight;
 
-                batches.add(new RayBatch(index, count));
+                batches.add(new RayBatch(index, batchCount));
 
-                index += count;
+                index += batchCount;
             }
         }
 

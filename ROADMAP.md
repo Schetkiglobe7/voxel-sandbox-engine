@@ -63,9 +63,22 @@ Rendering, persistence, and tooling concerns were intentionally excluded.
 - Gradle Wrapper and headless application launchers
 - OS/architecture-specific LWJGL natives and three-platform CI
 
+### Completed CPU Traversal
+- Concrete CPU ray batch traversal with order-independent batches
+- Correct DDA entry distances, starting-inside-solid behavior, and regression tests
+
+### Completed CPU World Preview
+- Strict scene → camera → rays → batches → traversal → pixel output pipeline
+- Headless executable demo and PNG export with diagnostic face shading
+- Repeatability and PNG pixel round-trip integration tests
+- Three-platform CI runs the demo and uploads preview artifacts
+
+### Verification (2026-10-07)
+- macOS: full build, 57 passing tests, both demos, and installed CPU launcher verified
+- CPU PNG inspected; repeatability and lossless export covered by integration tests
+- Windows/Linux: CI configured; execution results pending branch publication
+
 ### Next Increment
-- Implement the concrete CPU ray batch traversal stage
-- Produce a first CPU-rendered world image through the existing frame pipeline
 - Verify native context lifecycle before implementing GPU rendering
 
 ### Planned Topics

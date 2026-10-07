@@ -2,6 +2,7 @@ val lwjglVersion = "3.3.4"
 
 plugins {
     java
+    application
 }
 
 java {
@@ -58,4 +59,8 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+application {
+    mainClass.set("com.voxelsandbox.rendersystem.demo.CpuRenderDemo")
+    applicationDefaultJvmArgs = listOf("-Djava.awt.headless=true")
 }
