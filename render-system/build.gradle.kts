@@ -64,3 +64,23 @@ application {
     mainClass.set("com.voxelsandbox.rendersystem.demo.CpuRenderDemo")
     applicationDefaultJvmArgs = listOf("-Djava.awt.headless=true")
 }
+
+val nativeJvmArgs = if (hostOs.startsWith("mac")) listOf("-XstartOnFirstThread") else emptyList()
+val renderRuntimeClasspath = sourceSets.main.get().runtimeClasspath
+
+tasks.register<JavaExec>("runPreview") {
+    group = "application"
+    description = "Open a resizable OpenGL window showing the CPU world image (Escape to close)."
+    classpath = renderRuntimeClasspath
+    mainClass.set("com.voxelsandbox.rendersystem.demo.OpenGLPreviewDemo")
+    jvmArgs(nativeJvmArgs)
+}
+
+tasks.register<JavaExec>("nativeSmoke") {
+    group = "verification"
+    description = "Verify real OpenGL context lifecycle and texture pixel readback; requires a desktop session."
+    classpath = renderRuntimeClasspath
+    mainClass.set("com.voxelsandbox.rendersystem.demo.OpenGLPreviewDemo")
+    jvmArgs(nativeJvmArgs)
+    args("--smoke")
+}

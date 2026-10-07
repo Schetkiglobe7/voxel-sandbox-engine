@@ -103,6 +103,38 @@ The scene contains a flat voxel world and a stepped structure. Camera rays, DDA
 traversal, and diagnostic face shading run through the strict frame pipeline.
 The demo requires no display or GPU and does not open a window.
 
+### Native Window Preview
+
+To display the CPU world image in a resizable OpenGL window on macOS/Linux:
+
+```sh
+./gradlew :render-system:runPreview
+```
+
+Windows (PowerShell):
+
+```powershell
+.\gradlew.bat :render-system:runPreview
+```
+
+Close with **Escape** or the window close button. The scene and camera are static;
+OpenGL presents the CPU image as a texture. This is not yet GPU voxel rendering.
+It requires a desktop session and OpenGL 3.3 or later. The Gradle task automatically
+adds `-XstartOnFirstThread` on macOS; no manual JVM flags are needed.
+
+For a bounded native verification:
+
+```sh
+./gradlew :render-system:nativeSmoke
+```
+
+This creates hidden windows, checks initialization/shutdown/restart, presents the
+world image, compares framebuffer samples to CPU pixels before and after resizing, and exits. Its readback
+is saved to `render-system/build/demo/opengl-world.png`. On Linux without a desktop,
+install Xvfb and Mesa and run `xvfb-run -a ./gradlew :render-system:nativeSmoke`.
+The regular tests and PNG demo remain display-free.
+
+
 Use `:render-system:installDist` to generate the rendering demo launchers and
 `:render-system:distZip` for an archive. Run `render-system` or `render-system.bat`
 from `render-system/build/install/render-system/bin`, optionally passing a PNG path.
@@ -118,7 +150,7 @@ tests, runs both headless demos, and uploads a CPU preview on all three systems.
 
 CPU tests require no display or OpenGL driver. GLFW context creation requires a
 desktop session and an OpenGL driver; a hidden window is not a display-free context.
-On macOS, future GLFW launchers must pass `-XstartOnFirstThread` as described in the
+On macOS, GLFW launchers must pass `-XstartOnFirstThread` as described in the
 [LWJGL guide](https://www.lwjgl.org/guide). OpenGL contexts request the
 [forward-compatible core profile](https://www.glfw.org/docs/3.3/window_guide.html).
 

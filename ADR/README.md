@@ -118,6 +118,7 @@ Code changes that contradict an accepted ADR must either:
 | 0008 | RenderFrame Contract & Validation Model          | Accepted |
 | 0009 | RenderFrame & Stage Contract Enforcement         | Accepted |
 | 0010 | CPU World Image Pipeline                        | Accepted |
+| 0011 | Native Window and CPU Image Presentation         | Accepted |
 
 ---
 
@@ -131,3 +132,6 @@ They are not design documents or tutorials, but **decision records**.
 
 [ADR 0010: CPU World Image Pipeline](0010-cpu-world-image-pipeline.md) records the
 concrete batch traversal, read-only adapter, headless demo, and image output model.
+
+[ADR 0011: Native Window and CPU Image Presentation](0011-native-window-and-cpu-image-presentation.md)
+documents GLFW lifecycle ownership, texture presentation, and native verification.

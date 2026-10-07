@@ -268,4 +268,21 @@ sky color. PNG serialization runs outside the stages using Java ImageIO in
 headless mode. See ADR 0010.
 
 The demo does not initialize GLFW. It produces an image rather than an interactive
-window; native context validation and GPU rendering are still pending.
+window; native window presentation is implemented separately; GPU voxel rendering remains pending.
+
+
+## Native Window Presentation
+
+`OpenGLWindow` owns a GLFW session, window, and thread-local capabilities on one
+thread. Hidden-context and legacy bootstrap helpers delegate to it. It cleans up
+partial initialization and rejects concurrent native owners. CPU stages and the
+engine remain independent of this lifecycle.
+
+`OpenGLPreviewDemo` renders one CPU image, then `CpuImagePresenter` uploads it as
+RGBA and presents it through an OpenGL 3.3 core shader. The event loop uses physical
+framebuffer dimensions for high-DPI sizing and letterboxing; Escape and window
+close end the loop. Native resources close before the context is destroyed.
+
+`nativeSmoke` separately tests context restart, competing-owner rejection, resize, and real pixel readback. Mock driver
+tests exercise cleanup failures without a display. See ADR 0011. Movement and CPU
+frame refresh are the next milestone; this step introduces no GPU voxel traversal.

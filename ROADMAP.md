@@ -73,13 +73,24 @@ Rendering, persistence, and tooling concerns were intentionally excluded.
 - Repeatability and PNG pixel round-trip integration tests
 - Three-platform CI runs the demo and uploads preview artifacts
 
+### Completed Native Window Baseline
+- Single-thread GLFW/context owner with restart and failure-path cleanup
+- Visible, resizable OpenGL window presenting the CPU image; Escape closes it
+- Native smoke verification with real context lifecycle and GPU pixel readback
+- Display-free lifecycle failure tests and Linux Xvfb/Mesa CI job
+
 ### Verification (2026-10-07)
-- macOS: full build, 57 passing tests, both demos, and installed CPU launcher verified
+- macOS Apple M1: OpenGL 4.1 native smoke (including resize) and visible preview launch/exit verified
+- Full build, 62 passing tests, headless demos, and installed CPU launcher verified
 - CPU PNG inspected; repeatability and lossless export covered by integration tests
-- Windows/Linux: CI configured; execution results pending branch publication
+- Windows/Linux: headless CI configured; Linux native CI execution pending publication
+- Windows native rendering requires desktop/driver validation; it is not yet verified
+- PR publication is pending GitHub CLI authentication
 
 ### Next Increment
-- Verify native context lifecycle before implementing GPU rendering
+- Add camera controls and CPU image refresh to the visible preview
+- Validate the native Windows path on a suitable graphics driver
+- Implement GPU voxel rendering after the interactive CPU reference is established
 
 ### Planned Topics
 - OpenGL-based renderer (initial implementation)

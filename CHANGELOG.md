@@ -14,6 +14,11 @@ and adheres to [Semantic Versioning](https://semver.org/).
 Planned and ongoing work after the first engine pre-release.
 
 ### Added
+- Resizable native OpenGL preview of the CPU world image (`:render-system:runPreview`).
+- Native lifecycle and framebuffer sample verification (`:render-system:nativeSmoke`).
+- Display-free lifecycle tests for restart, partial failures, cleanup, and thread ownership.
+- Linux Xvfb/Mesa native verification CI job with PNG readback artifacts.
+- ADR 0011 for native ownership and CPU texture presentation.
 - Headless CPU world rendering demo with PNG export and portable application launchers.
 - Scene input and diagnostic pixel output stages composing the strict frame pipeline.
 - Integration tests for deterministic pixel output, PNG round trips, and negative coordinates.
@@ -26,6 +31,9 @@ Planned and ongoing work after the first engine pre-release.
 - Build, test, and headless startup CI matrix for macOS, Windows, and Linux.
 
 ### Fixed
+- Native window and GLFW resource leaks after OpenGL capability initialization failures.
+- Missing thread-local capability cleanup on context shutdown.
+- Legacy bootstrap now shares the context owner and exposes explicit shutdown.
 - DDA hit normals when a ray starts inside solid voxels.
 - DDA visitor entry distances and traversal distance limits.
 - Missing Gradle Wrapper JAR in clean checkouts.

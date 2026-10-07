@@ -106,3 +106,12 @@ For rendering changes, inspect `render-system/build/demo/voxel-world.png` after
 running the demo. CI uploads this image per operating system. Automated checks
 cover repeatable pixels and lossless PNG export; GPU parity requires separate
 validation once a GPU pipeline exists.
+
+
+Native rendering changes should also run `./gradlew :render-system:nativeSmoke`
+(or `.\gradlew.bat :render-system:nativeSmoke` on Windows) with a desktop session
+and OpenGL 3.3 driver. Inspect the generated `opengl-world.png` and manually check
+`:render-system:runPreview`, resizing, and Escape/window-close exit. These native
+checks are separate from display-free unit tests; record which platforms actually
+ran them. Linux CI uses Xvfb and Mesa. Do not claim Windows/macOS GPU coverage from
+the headless matrix alone.
