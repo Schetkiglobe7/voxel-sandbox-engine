@@ -14,6 +14,27 @@ repositories {
     mavenCentral()
 }
 
+val hostOs = providers.systemProperty("os.name").get().lowercase()
+val hostArch = providers.systemProperty("os.arch").get().lowercase()
+val lwjglNatives = when {
+    hostOs.startsWith("mac") -> when (hostArch) {
+        "aarch64", "arm64" -> "natives-macos-arm64"
+        "amd64", "x86_64" -> "natives-macos"
+        else -> error("Unsupported macOS architecture: $hostArch")
+    }
+    hostOs.startsWith("windows") -> when (hostArch) {
+        "aarch64", "arm64" -> "natives-windows-arm64"
+        "amd64", "x86_64" -> "natives-windows"
+        else -> error("Unsupported Windows architecture: $hostArch")
+    }
+    hostOs.startsWith("linux") -> when (hostArch) {
+        "aarch64", "arm64" -> "natives-linux-arm64"
+        "amd64", "x86_64" -> "natives-linux"
+        else -> error("Unsupported Linux architecture: $hostArch")
+    }
+    else -> error("Unsupported operating system: $hostOs")
+}
+
 dependencies {
     // === Engine dependency ===
     implementation(project(":engine"))
@@ -26,18 +47,10 @@ dependencies {
     implementation("org.lwjgl:lwjgl-opengl")
     implementation("org.lwjgl:lwjgl-glfw")
 
-    // === Native bindings (OS-specific) ===
-    runtimeOnly("org.lwjgl:lwjgl::natives-windows")
-    runtimeOnly("org.lwjgl:lwjgl-opengl::natives-windows")
-    runtimeOnly("org.lwjgl:lwjgl-glfw::natives-windows")
-
-    runtimeOnly("org.lwjgl:lwjgl::natives-linux")
-    runtimeOnly("org.lwjgl:lwjgl-opengl::natives-linux")
-    runtimeOnly("org.lwjgl:lwjgl-glfw::natives-linux")
-
-    runtimeOnly("org.lwjgl:lwjgl::natives-macos")
-    runtimeOnly("org.lwjgl:lwjgl-opengl::natives-macos")
-    runtimeOnly("org.lwjgl:lwjgl-glfw::natives-macos")
+    // Package only the natives matching the current host.
+    listOf("lwjgl", "lwjgl-opengl", "lwjgl-glfw").forEach { module ->
+        runtimeOnly("org.lwjgl:$module::$lwjglNatives")
+    }
 
     // === Testing ===
     testImplementation(libs.junit.jupiter)

@@ -92,3 +92,12 @@ By contributing to this project, you confirm that:
 If you wish to contribute code or assets that are not your original creation, please clearly indicate their source and applicable license in the pull request.
 
 This project is governed by a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you agree to abide by its terms and help maintain a respectful and welcoming community.
+
+## Build Verification and Documentation
+
+Use JDK 17 and run `./gradlew build :engine:run` on macOS/Linux or
+`.\gradlew.bat build :engine:run` on Windows before submitting changes.
+The CI matrix repeats these checks on all three systems without a graphics display.
+Update README for usage changes, ROADMAP for milestone progress, CHANGELOG for
+observable changes, and ARCHITECTURE for module responsibilities. Preserve accepted
+ADRs; record new significant architectural decisions in a new ADR.

@@ -48,12 +48,25 @@ Rendering, persistence, and tooling concerns were intentionally excluded.
 
 ## Phase 2 — Rendering Layer
 
-**Status:** ⏳ Planned
+**Status:** 🚧 In progress
 
 ### Goals
 - Introduce a rendering module fully decoupled from engine logic
 - Preserve engine determinism and testability
 - Enable multiple rendering backends over time
+
+### Delivered Foundation
+- Read-only adapters between engine and rendering
+- Camera, CPU ray generation, batching, and voxel traversal
+- Frame-driven pipelines with strict stage contracts (ADRs 0007–0009)
+- CPU pixel target and restored rendering compilation
+- Gradle Wrapper and headless application launchers
+- OS/architecture-specific LWJGL natives and three-platform CI
+
+### Next Increment
+- Implement the concrete CPU ray batch traversal stage
+- Produce a first CPU-rendered world image through the existing frame pipeline
+- Verify native context lifecycle before implementing GPU rendering
 
 ### Planned Topics
 - OpenGL-based renderer (initial implementation)

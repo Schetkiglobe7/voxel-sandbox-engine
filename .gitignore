@@ -114,3 +114,11 @@ pnpm-debug.log*
 
 # Ignore Gradle build output directory
 build
+
+# The Gradle Wrapper is required for clean checkouts.
+!gradle/wrapper/gradle-wrapper.jar
+
+# Render target packages are source code, not Maven output.
+!render-system/src/main/java/com/voxelsandbox/rendersystem/core/target/
+!render-system/src/main/java/com/voxelsandbox/rendersystem/cpu/target/
+!render-system/src/test/java/com/voxelsandox/rendersystem/cpu/target/

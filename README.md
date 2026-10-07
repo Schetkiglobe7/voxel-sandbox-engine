@@ -31,7 +31,9 @@ engines, with particular emphasis on:
 
 This repository represents the **technical foundation of the engine**.
 The core engine module is implemented and released as a **pre-release (v1.1.0)**,
-while rendering, persistence, and tooling layers are planned as separate modules.
+The experimental `render-system` module includes CPU frame pipelines, camera ray
+generation, voxel traversal, and OpenGL context scaffolding. Persistence and
+tooling remain planned.
 
 ---
 
@@ -57,13 +59,49 @@ major version.
 - Extensive unit test coverage for world and streaming logic
 
 ### Not Implemented Yet
-- Rendering system (OpenGL, Vulkan under evaluation)
+- Complete GPU renderer (the OpenGL render loop remains a placeholder)
 - Persistence layer (database-backed world storage)
 - Asset pipeline
 - Gameplay systems
 - Tooling and editor support
 
 ---
+
+## Build and Run
+
+Install a **JDK 17** matching your machine architecture and set `JAVA_HOME`.
+The Gradle Wrapper downloads Gradle and Maven dependencies on the first build.
+Node.js is optional and used only for contribution hooks.
+
+macOS / Linux:
+
+```sh
+./gradlew build
+./gradlew :engine:run
+```
+
+Windows (PowerShell):
+
+```powershell
+.\gradlew.bat build
+.\gradlew.bat :engine:run
+```
+
+The current executable is a headless bootstrap and prints
+`Voxel Sandbox Engine bootstrap OK`. It does not display a voxel world yet.
+Use `:engine:installDist` to generate launchers under `engine/build/install/engine/bin`;
+these require Java 17 at runtime. `:engine:distZip` creates a distributable archive.
+
+Native rendering dependencies are selected for the host OS and JVM architecture:
+macOS, Windows, and Linux support x86-64 and ARM64. Distributions of a future
+native renderer must be built separately for each target. The CI matrix builds,
+tests, and runs the headless bootstrap on all three operating systems.
+
+CPU tests require no display or OpenGL driver. GLFW context creation requires a
+desktop session and an OpenGL driver; a hidden window is not a display-free context.
+On macOS, future GLFW launchers must pass `-XstartOnFirstThread` as described in the
+[LWJGL guide](https://www.lwjgl.org/guide). OpenGL contexts request the
+[forward-compatible core profile](https://www.glfw.org/docs/3.3/window_guide.html).
 
 ## Architecture Overview
 
@@ -80,9 +118,9 @@ The engine core manages:
 
 This layer is **rendering-agnostic** and **persistence-agnostic** by design.
 
-### Rendering Layer (Planned)
+### Rendering Layer (In Progress)
 
-A dedicated rendering module will:
+The experimental `render-system` module is being developed to:
 - consume read-only world state
 - generate chunk-oriented meshes
 - manage GPU resources independently from engine logic

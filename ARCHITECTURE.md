@@ -41,7 +41,19 @@ without modifying engine internals.
 
 ## Module Scope
 
-This repository currently contains **only the core engine module**.
+This repository contains the stable `engine` module and an experimental
+`render-system` module. The latter depends on the engine through read-only
+adapters; the engine does not depend on rendering or native libraries.
+
+The render system includes frame contract validation (ADRs 0007–0009), CPU
+camera and ray stages, voxel DDA traversal, and an in-memory ARGB render target.
+Render targets expose dimensions, frame boundaries, and pixel output independently
+of graphics APIs. CPU targets clear to transparent at frame start, reject writes
+outside a frame, and enforce pixel bounds. OpenGL rendering remains a placeholder.
+
+Java 17 and the checked-in Gradle Wrapper provide the portable build. The engine
+application generates POSIX and Windows launch scripts. Native dependencies in
+`render-system` follow the host OS and JVM architecture (x86-64 or ARM64).
 
 ### Included
 - World and chunk lifecycle management

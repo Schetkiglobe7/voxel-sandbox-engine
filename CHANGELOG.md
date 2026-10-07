@@ -13,6 +13,22 @@ and adheres to [Semantic Versioning](https://semver.org/).
 
 Planned and ongoing work after the first engine pre-release.
 
+### Added
+- Portable headless engine launcher and distributable launch scripts.
+- CPU ARGB render target and backend-independent target contract.
+- Build, test, and headless startup CI matrix for macOS, Windows, and Linux.
+
+### Fixed
+- Missing Gradle Wrapper JAR in clean checkouts.
+- Missing render target classes preventing rendering module compilation.
+- Native dependency selection for host OS and x86-64/ARM64 architecture.
+- OpenGL core context forward compatibility required on macOS.
+- Source target packages accidentally excluded by the Maven ignore rule.
+
+### Changed
+- README, architecture, and roadmap now describe implemented rendering foundations
+  and the remaining CPU/GPU work.
+
 ### Planned
 - Rendering layer (OpenGL, Vulkan evaluation)
 - GPU-friendly chunk meshing
