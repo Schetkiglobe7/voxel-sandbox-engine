@@ -94,11 +94,13 @@ Rendering, persistence, and tooling concerns were intentionally excluded.
 - Visible preview launch/exit verified locally; scripted controls verified, physical keyboard/mouse checks pending
 - CPU PNG inspected; repeatability and lossless export covered by integration tests
 - Previous baseline GitHub CI: 62 tests, build, and CPU demo passed on all three systems
-- Current interactive increment: cross-platform CI pending branch publication
+- Current interactive increment: 71 tests, build, and CPU demo passed on macOS, Windows, and Linux
+- [Interactive CI run](https://github.com/Schetkiglobe7/voxel-sandbox-engine/actions/runs/37593243841) also verifies moved/reset texture updates under Linux Xvfb/Mesa
 - Linux native CI: context lifecycle and pixel readback passed with Xvfb/Mesa
 - [Verified CI run](https://github.com/Schetkiglobe7/voxel-sandbox-engine/actions/runs/37591761680) covers all four jobs
 - Windows native rendering requires desktop/driver validation; it is not yet verified
 - Native baseline delivered in merged [PR #1](https://github.com/Schetkiglobe7/voxel-sandbox-engine/pull/1)
+- Interactive camera published in draft [PR #2](https://github.com/Schetkiglobe7/voxel-sandbox-engine/pull/2)
 
 ### Next Increment
 - Extend the CPU reference with scene bounds and streaming around the moving camera

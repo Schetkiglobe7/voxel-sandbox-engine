@@ -278,7 +278,7 @@ thread. Hidden-context and legacy bootstrap helpers delegate to it. It cleans up
 partial initialization and rejects concurrent native owners. CPU stages and the
 engine remain independent of this lifecycle.
 
-`OpenGLPreviewDemo` renders one CPU image, then `CpuImagePresenter` uploads it as
+`OpenGLPreviewDemo` renders an initial CPU image, then `CpuImagePresenter` uploads it as
 RGBA and presents it through an OpenGL 3.3 core shader. The event loop uses physical
 framebuffer dimensions for high-DPI sizing and letterboxing; Escape and window
 close end the loop. Native resources close before the context is destroyed.
