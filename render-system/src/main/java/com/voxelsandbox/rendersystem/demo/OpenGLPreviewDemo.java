@@ -36,6 +36,10 @@ public final class OpenGLPreviewDemo {
                         verifyPixels(image,width.get(0),height.get(0));
                         glfwSetWindowSize(window.handle(),401,257);
                         glfwPollEvents();
+                        // GLX/Mesa may resize its drawable buffers only on the next swap.
+                        // Present once, then redraw before inspecting the resized back buffer.
+                        glfwSwapBuffers(window.handle());
+                        glfwPollEvents();
                         glfwGetFramebufferSize(window.handle(),width,height);
                         presenter.draw(width.get(0),height.get(0));
                         verifyPixels(image,width.get(0),height.get(0));
@@ -90,7 +94,10 @@ public final class OpenGLPreviewDemo {
                 int x = w*(2*col+1)/16, y = h*(2*row+1)/10;
                 int sx = (int)((x+.5)*image.getWidth()/w), sy = (int)((y+.5)*image.getHeight()/h);
                 if (capture.getPixel(left+x,top+y) != image.getPixel(sx,sy))
-                    throw new IllegalStateException("GPU presentation pixel mismatch at sample " + col + "," + row);
+                    throw new IllegalStateException("GPU presentation pixel mismatch at sample " + col + "," + row
+                            + " in " + width + "x" + height + ": expected "
+                            + Integer.toHexString(image.getPixel(sx,sy)) + ", got "
+                            + Integer.toHexString(capture.getPixel(left+x,top+y)));
             }
             CpuRenderDemo.writePng(capture,Path.of("build/demo/opengl-world.png"));
         } finally { MemoryUtil.memFree(pixels); }

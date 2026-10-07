@@ -83,9 +83,10 @@ Rendering, persistence, and tooling concerns were intentionally excluded.
 - macOS Apple M1: OpenGL 4.1 native smoke (including resize) and visible preview launch/exit verified
 - Full build, 62 passing tests, headless demos, and installed CPU launcher verified
 - CPU PNG inspected; repeatability and lossless export covered by integration tests
-- Windows/Linux: headless CI configured; Linux native CI execution pending publication
+- GitHub CI: build, tests, and CPU demo passed on macOS, Windows, and Linux
+- Linux native CI: initial presentation passed; resize readback synchronization under verification
 - Windows native rendering requires desktop/driver validation; it is not yet verified
-- GitHub authentication verified; branch publication and PR review are in progress
+- Published branch and draft [PR #1](https://github.com/Schetkiglobe7/voxel-sandbox-engine/pull/1)
 
 ### Next Increment
 - Add camera controls and CPU image refresh to the visible preview

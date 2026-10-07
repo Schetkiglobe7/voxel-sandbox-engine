@@ -31,6 +31,7 @@ Planned and ongoing work after the first engine pre-release.
 - Build, test, and headless startup CI matrix for macOS, Windows, and Linux.
 
 ### Fixed
+- Native resize smoke test synchronizes drawable buffers before readback on GLX/Mesa.
 - Native window and GLFW resource leaks after OpenGL capability initialization failures.
 - Missing thread-local capability cleanup on context shutdown.
 - Legacy bootstrap now shares the context owner and exposes explicit shutdown.
