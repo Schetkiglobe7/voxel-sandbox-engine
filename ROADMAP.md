@@ -85,7 +85,7 @@ Rendering, persistence, and tooling concerns were intentionally excluded.
 - CPU PNG inspected; repeatability and lossless export covered by integration tests
 - Windows/Linux: headless CI configured; Linux native CI execution pending publication
 - Windows native rendering requires desktop/driver validation; it is not yet verified
-- PR publication is pending GitHub CLI authentication
+- GitHub authentication verified; branch publication and PR review are in progress
 
 ### Next Increment
 - Add camera controls and CPU image refresh to the visible preview
