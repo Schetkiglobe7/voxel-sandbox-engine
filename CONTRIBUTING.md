@@ -92,3 +92,26 @@ By contributing to this project, you confirm that:
 If you wish to contribute code or assets that are not your original creation, please clearly indicate their source and applicable license in the pull request.
 
 This project is governed by a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you agree to abide by its terms and help maintain a respectful and welcoming community.
+
+## Build Verification and Documentation
+
+Use JDK 17 and run `./gradlew build :engine:run :render-system:run` on macOS/Linux or
+`.\gradlew.bat build :engine:run :render-system:run` on Windows before submitting changes.
+The CI matrix repeats these checks on all three systems without a graphics display.
+Update README for usage changes, ROADMAP for milestone progress, CHANGELOG for
+observable changes, and ARCHITECTURE for module responsibilities. Preserve accepted
+ADRs; record new significant architectural decisions in a new ADR.
+
+For rendering changes, inspect `render-system/build/demo/voxel-world.png` after
+running the demo. CI uploads this image per operating system. Automated checks
+cover repeatable pixels and lossless PNG export; GPU parity requires separate
+validation once a GPU pipeline exists.
+
+
+Native rendering changes should also run `./gradlew :render-system:nativeSmoke`
+(or `.\gradlew.bat :render-system:nativeSmoke` on Windows) with a desktop session
+and OpenGL 3.3 driver. Inspect the generated `opengl-world.png` and manually check
+`:render-system:runPreview`, resizing, and Escape/window-close exit. These native
+checks are separate from display-free unit tests; record which platforms actually
+ran them. Linux CI uses Xvfb and Mesa. Do not claim Windows/macOS GPU coverage from
+the headless matrix alone.

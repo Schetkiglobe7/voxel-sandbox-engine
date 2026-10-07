@@ -41,7 +41,19 @@ without modifying engine internals.
 
 ## Module Scope
 
-This repository currently contains **only the core engine module**.
+This repository contains the stable `engine` module and an experimental
+`render-system` module. The latter depends on the engine through read-only
+adapters; the engine does not depend on rendering or native libraries.
+
+The render system includes frame contract validation (ADRs 0007–0009), CPU
+camera and ray stages, voxel DDA traversal, and an in-memory ARGB render target.
+Render targets expose dimensions, frame boundaries, and pixel output independently
+of graphics APIs. CPU targets clear to transparent at frame start, reject writes
+outside a frame, and enforce pixel bounds. OpenGL rendering remains a placeholder; the CPU preview is executable.
+
+Java 17 and the checked-in Gradle Wrapper provide the portable build. The engine
+application generates POSIX and Windows launch scripts. Native dependencies in
+`render-system` follow the host OS and JVM architecture (x86-64 or ARM64).
 
 ### Included
 - World and chunk lifecycle management
@@ -230,3 +242,47 @@ The Voxel Sandbox Engine provides a minimal but solid core focused on:
 
 It is intended to serve as a foundation upon which rendering, persistence,
 and gameplay systems can be built independently.
+
+## CPU Ray Traversal Integration
+
+`CpuRayBatchTraversalStage` reads origins, directions, batches, a read-only world,
+and a finite positive maximum distance exclusively from the frame. It validates
+exact batch coverage before traversal and publishes an immutable result list in
+original ray order. Hit positions are world-space intersection points; misses
+carry infinite distance. `EngineVoxelWorldAdapter` queries `IWorldView` without
+loading chunks and handles negative coordinates with floor division.
+
+DDA visits report voxel entry distances, stop at the first unloaded region, and
+include hits exactly at the distance limit. Starting inside solid returns distance
+zero and a zero normal. Directions must be finite unit vectors.
+
+
+## CPU World Preview
+
+The executable `CpuRenderDemo` assembles a world before rendering, then executes
+scene input, camera matrices, ray generation, batching, DDA traversal, and pixel
+output in a strict `CpuRenderFrame`. Rays and results use row-major pixel order.
+Batches describe contiguous slices, not spatial tiles. `CpuPixelOutputStage`
+allocates a fresh target, shades voxel faces diagnostically, and fills misses with
+sky color. PNG serialization runs outside the stages using Java ImageIO in
+headless mode. See ADR 0010.
+
+The demo does not initialize GLFW. It produces an image rather than an interactive
+window; native window presentation is implemented separately; GPU voxel rendering remains pending.
+
+
+## Native Window Presentation
+
+`OpenGLWindow` owns a GLFW session, window, and thread-local capabilities on one
+thread. Hidden-context and legacy bootstrap helpers delegate to it. It cleans up
+partial initialization and rejects concurrent native owners. CPU stages and the
+engine remain independent of this lifecycle.
+
+`OpenGLPreviewDemo` renders one CPU image, then `CpuImagePresenter` uploads it as
+RGBA and presents it through an OpenGL 3.3 core shader. The event loop uses physical
+framebuffer dimensions for high-DPI sizing and letterboxing; Escape and window
+close end the loop. Native resources close before the context is destroyed.
+
+`nativeSmoke` separately tests context restart, competing-owner rejection, resize, and real pixel readback. Mock driver
+tests exercise cleanup failures without a display. See ADR 0011. Movement and CPU
+frame refresh are the next milestone; this step introduces no GPU voxel traversal.

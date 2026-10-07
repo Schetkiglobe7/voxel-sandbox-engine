@@ -48,12 +48,51 @@ Rendering, persistence, and tooling concerns were intentionally excluded.
 
 ## Phase 2 — Rendering Layer
 
-**Status:** ⏳ Planned
+**Status:** 🚧 In progress
 
 ### Goals
 - Introduce a rendering module fully decoupled from engine logic
 - Preserve engine determinism and testability
 - Enable multiple rendering backends over time
+
+### Delivered Foundation
+- Read-only adapters between engine and rendering
+- Camera, CPU ray generation, batching, and voxel traversal
+- Frame-driven pipelines with strict stage contracts (ADRs 0007–0009)
+- CPU pixel target and restored rendering compilation
+- Gradle Wrapper and headless application launchers
+- OS/architecture-specific LWJGL natives and three-platform CI
+
+### Completed CPU Traversal
+- Concrete CPU ray batch traversal with order-independent batches
+- Correct DDA entry distances, starting-inside-solid behavior, and regression tests
+
+### Completed CPU World Preview
+- Strict scene → camera → rays → batches → traversal → pixel output pipeline
+- Headless executable demo and PNG export with diagnostic face shading
+- Repeatability and PNG pixel round-trip integration tests
+- Three-platform CI runs the demo and uploads preview artifacts
+
+### Completed Native Window Baseline
+- Single-thread GLFW/context owner with restart and failure-path cleanup
+- Visible, resizable OpenGL window presenting the CPU image; Escape closes it
+- Native smoke verification with real context lifecycle and GPU pixel readback
+- Display-free lifecycle failure tests and Linux Xvfb/Mesa CI job
+
+### Verification (2026-10-07)
+- macOS Apple M1: OpenGL 4.1 native smoke (including resize) and visible preview launch/exit verified
+- Full build, 62 passing tests, headless demos, and installed CPU launcher verified
+- CPU PNG inspected; repeatability and lossless export covered by integration tests
+- GitHub CI: build, tests, and CPU demo passed on macOS, Windows, and Linux
+- Linux native CI: context lifecycle and pixel readback passed with Xvfb/Mesa
+- [Verified CI run](https://github.com/Schetkiglobe7/voxel-sandbox-engine/actions/runs/37591761680) covers all four jobs
+- Windows native rendering requires desktop/driver validation; it is not yet verified
+- Published branch and draft [PR #1](https://github.com/Schetkiglobe7/voxel-sandbox-engine/pull/1)
+
+### Next Increment
+- Add camera controls and CPU image refresh to the visible preview
+- Validate the native Windows path on a suitable graphics driver
+- Implement GPU voxel rendering after the interactive CPU reference is established
 
 ### Planned Topics
 - OpenGL-based renderer (initial implementation)

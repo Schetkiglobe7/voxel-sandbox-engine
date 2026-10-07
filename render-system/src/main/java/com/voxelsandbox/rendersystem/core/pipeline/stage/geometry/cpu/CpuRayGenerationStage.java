@@ -19,8 +19,8 @@ import java.util.Set;
  * CPU reference implementation of {@link IRayGenerationStage}.
  *
  * <p>
- * This stage generates a single world-space ray per frame,
- * corresponding to the center of the viewport.
+ * This stage generates one world-space ray per pixel in row-major order,
+ * sampling the pixel center.
  * </p>
  *
  * <p>
@@ -33,8 +33,8 @@ import java.util.Set;
  * </ul>
  *
  * <p>
- * The generated ray is deterministic and allocation-free
- * (except for the output container).
+ * The generated rays are deterministic. The CPU reference path allocates
+ * ray vectors and output containers.
  * </p>
  */
 public final class CpuRayGenerationStage implements IRayGenerationStage {
@@ -75,8 +75,10 @@ public final class CpuRayGenerationStage implements IRayGenerationStage {
         int height = frame.get(CameraViewportFrameKeys.VIEWPORT_HEIGHT)
                 .orElseThrow(() -> new IllegalStateException("Viewport height missing"));
 
-        List<Vec3f> origins = new ArrayList<>(width * height);
-        List<Vec3f> directions = new ArrayList<>(width * height);
+        if (width <= 0 || height <= 0) throw new IllegalArgumentException("Viewport must be positive");
+        int count = Math.multiplyExact(width, height);
+        List<Vec3f> origins = new ArrayList<>(count);
+        List<Vec3f> directions = new ArrayList<>(count);
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {

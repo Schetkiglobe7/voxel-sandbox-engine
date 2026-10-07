@@ -1,5 +1,6 @@
 plugins {
     java
+    application
 }
 
 java {
@@ -18,4 +19,7 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+application {
+    mainClass.set("com.voxelsandbox.engine.bootstrap.EngineApplication")
 }

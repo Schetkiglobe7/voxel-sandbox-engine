@@ -31,7 +31,9 @@ engines, with particular emphasis on:
 
 This repository represents the **technical foundation of the engine**.
 The core engine module is implemented and released as a **pre-release (v1.1.0)**,
-while rendering, persistence, and tooling layers are planned as separate modules.
+The experimental `render-system` module includes CPU frame pipelines, camera ray
+generation, voxel traversal, and OpenGL context scaffolding. Persistence and
+tooling remain planned.
 
 ---
 
@@ -55,15 +57,102 @@ major version.
 - Pluggable chunk eviction policies
 - Deterministic and idempotent streaming behavior
 - Extensive unit test coverage for world and streaming logic
+- CPU rendering pipeline with concrete ray traversal and PNG world preview
 
 ### Not Implemented Yet
-- Rendering system (OpenGL, Vulkan under evaluation)
+- Complete GPU renderer (the OpenGL render loop remains a placeholder)
 - Persistence layer (database-backed world storage)
 - Asset pipeline
 - Gameplay systems
 - Tooling and editor support
 
 ---
+
+## Build and Run
+
+Install a **JDK 17** matching your machine architecture and set `JAVA_HOME`.
+The Gradle Wrapper downloads Gradle and Maven dependencies on the first build.
+Node.js is optional and used only for contribution hooks.
+
+macOS / Linux:
+
+```sh
+./gradlew build
+./gradlew :engine:run
+```
+
+Windows (PowerShell):
+
+```powershell
+.\gradlew.bat build
+.\gradlew.bat :engine:run
+```
+
+The engine executable is a headless bootstrap and prints
+`Voxel Sandbox Engine bootstrap OK`. The rendering demo generates a world image:
+
+```sh
+./gradlew :render-system:run
+# Optional output path (relative to the render-system directory):
+./gradlew :render-system:run --args="build/demo/custom-world.png"
+```
+
+On Windows use `.\gradlew.bat :render-system:run`.
+The default output is `render-system/build/demo/voxel-world.png` (320 × 200 pixels).
+The scene contains a flat voxel world and a stepped structure. Camera rays, DDA
+traversal, and diagnostic face shading run through the strict frame pipeline.
+The demo requires no display or GPU and does not open a window.
+
+### Native Window Preview
+
+To display the CPU world image in a resizable OpenGL window on macOS/Linux:
+
+```sh
+./gradlew :render-system:runPreview
+```
+
+Windows (PowerShell):
+
+```powershell
+.\gradlew.bat :render-system:runPreview
+```
+
+Close with **Escape** or the window close button. The scene and camera are static;
+OpenGL presents the CPU image as a texture. This is not yet GPU voxel rendering.
+It requires a desktop session and OpenGL 3.3 or later. The Gradle task automatically
+adds `-XstartOnFirstThread` on macOS; no manual JVM flags are needed.
+
+For a bounded native verification:
+
+```sh
+./gradlew :render-system:nativeSmoke
+```
+
+This creates hidden windows, checks initialization/shutdown/restart, presents the
+world image, compares framebuffer samples to CPU pixels before and after resizing, and exits. Its readback
+is saved to `render-system/build/demo/opengl-world.png`. On Linux without a desktop,
+install Xvfb and Mesa and run `xvfb-run -a ./gradlew :render-system:nativeSmoke`.
+The regular tests and PNG demo remain display-free.
+
+
+Use `:render-system:installDist` to generate the rendering demo launchers and
+`:render-system:distZip` for an archive. Run `render-system` or `render-system.bat`
+from `render-system/build/install/render-system/bin`, optionally passing a PNG path.
+For installed launchers, relative output paths resolve against the current directory.
+
+Use `:engine:installDist` to generate launchers under `engine/build/install/engine/bin`;
+these require Java 17 at runtime. `:engine:distZip` creates a distributable archive.
+
+Native rendering dependencies are selected for the host OS and JVM architecture:
+macOS, Windows, and Linux support x86-64 and ARM64. Distributions of a future
+native renderer must be built separately for each target. The CI matrix builds,
+tests, runs both headless demos, and uploads a CPU preview on all three systems.
+
+CPU tests require no display or OpenGL driver. GLFW context creation requires a
+desktop session and an OpenGL driver; a hidden window is not a display-free context.
+On macOS, GLFW launchers must pass `-XstartOnFirstThread` as described in the
+[LWJGL guide](https://www.lwjgl.org/guide). OpenGL contexts request the
+[forward-compatible core profile](https://www.glfw.org/docs/3.3/window_guide.html).
 
 ## Architecture Overview
 
@@ -80,9 +169,9 @@ The engine core manages:
 
 This layer is **rendering-agnostic** and **persistence-agnostic** by design.
 
-### Rendering Layer (Planned)
+### Rendering Layer (In Progress)
 
-A dedicated rendering module will:
+The experimental `render-system` module is being developed to:
 - consume read-only world state
 - generate chunk-oriented meshes
 - manage GPU resources independently from engine logic
